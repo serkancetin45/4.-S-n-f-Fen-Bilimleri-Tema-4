@@ -1,0 +1,939 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Hüseyin Akdağ İlkokulu Fen Bilimleri 4. Tema Yarışması</title>
+
+<style>
+  :root{
+    --bgA:#060718;
+    --bgB:#070a22;
+    --panel: rgba(10, 14, 40, .72);
+    --panel2: rgba(7, 12, 34, .62);
+
+    --neon1:#ff4fe6;
+    --neon2:#6cf8ff;
+    --neon3:#7c5cff;
+    --text:#eaf1ff;
+    --muted:rgba(234,241,255,.70);
+
+    --good:#3cff9b;
+    --bad:#ff4d6d;
+
+    --radius:22px;
+    --border: 1px solid rgba(255,255,255,.10);
+    --shadow: 0 0 26px rgba(255,79,230,.14), 0 0 28px rgba(108,248,255,.12);
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0; min-height:100vh; color:var(--text);
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", sans-serif;
+    background:
+      radial-gradient(1100px 700px at 20% 18%, rgba(108,248,255,.12), transparent 62%),
+      radial-gradient(980px 650px at 75% 25%, rgba(255,79,230,.14), transparent 62%),
+      radial-gradient(1100px 800px at 70% 85%, rgba(124,92,255,.10), transparent 64%),
+      linear-gradient(160deg, var(--bgA), var(--bgB));
+    overflow-x:hidden;
+  }
+
+  body::before{
+    content:"";
+    position:fixed; inset:0;
+    background:
+      radial-gradient(2px 2px at 20% 30%, rgba(255,255,255,.22), transparent 60%),
+      radial-gradient(2px 2px at 60% 40%, rgba(255,255,255,.16), transparent 60%),
+      radial-gradient(2px 2px at 80% 70%, rgba(255,255,255,.14), transparent 60%),
+      radial-gradient(2px 2px at 35% 75%, rgba(255,255,255,.12), transparent 60%);
+    opacity:.7;
+    pointer-events:none;
+  }
+
+  canvas#confetti{position:fixed;inset:0;pointer-events:none;z-index:999}
+
+  .wrap{max-width:1200px;margin:0 auto;padding:16px 14px 26px}
+  .top{
+    display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;
+    padding:14px 14px;border-radius:var(--radius);
+    background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+    border:var(--border); box-shadow:var(--shadow); backdrop-filter: blur(10px);
+  }
+  .brand{display:flex;gap:10px;align-items:center;min-width:320px}
+  .logo{
+    width:44px;height:44px;border-radius:16px;
+    background:linear-gradient(135deg, rgba(108,248,255,.95), rgba(255,79,230,.95));
+    box-shadow:0 0 20px rgba(108,248,255,.18), 0 0 22px rgba(255,79,230,.18);
+  }
+  .brand h1{margin:0;font-size:14px;font-weight:950;letter-spacing:.15px;line-height:1.15}
+  .brand .sub{margin:2px 0 0;font-size:12px;color:rgba(234,241,255,.70)}
+
+  .hud{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:flex-end;flex:1}
+  .chip{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    padding:10px 12px;min-width:170px;border-radius:999px;
+    background:rgba(8,12,34,.60);border:1px solid rgba(255,255,255,.10);
+    box-shadow:0 0 14px rgba(0,0,0,.25);
+  }
+  .chip span{color:rgba(234,241,255,.70);font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+  .chip b{font-size:16px;font-weight:950;color:var(--neon2);text-shadow:0 0 16px rgba(108,248,255,.20)}
+
+  .grid{
+    margin-top:14px;
+    display:grid;
+    grid-template-columns: 1.35fr .65fr;
+    gap:14px;
+    align-items:start;
+  }
+  @media (max-width:980px){ .grid{grid-template-columns:1fr} }
+
+  .card{
+    border-radius:var(--radius);
+    background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+    border:var(--border);
+    box-shadow:var(--shadow);
+    backdrop-filter: blur(10px);
+    overflow:hidden;
+    position:relative;
+  }
+  .card::after{
+    content:"";
+    position:absolute; inset:0;
+    background:
+      linear-gradient(to right, rgba(255,255,255,.035) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,.035) 1px, transparent 1px);
+    background-size: 42px 42px;
+    opacity:.35;
+    pointer-events:none;
+    mix-blend-mode:screen;
+  }
+  .inner{padding:16px; position:relative; z-index:1}
+
+  .setup{
+    border-radius:18px;
+    background: linear-gradient(180deg, rgba(6,10,34,.92), rgba(7,12,34,.78));
+    border:1px solid rgba(255,79,230,.28);
+    box-shadow: 0 0 24px rgba(255,79,230,.14), 0 0 18px rgba(108,248,255,.10);
+    padding:14px;
+    margin-bottom:12px;
+  }
+
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:end}
+  label{display:block;font-size:12px;color:rgba(234,241,255,.70);margin:0 0 6px}
+
+  input[type="text"], select{
+    width:100%;
+    padding:12px 12px;
+    border-radius:14px;
+    border:1px solid rgba(255,255,255,.14);
+    background: rgba(10,10,25,.34);
+    color:var(--text);
+    outline:none;
+    font-weight:850;
+  }
+  input[type="text"]::placeholder{color:rgba(167,193,230,.75)}
+
+  .btn{
+    cursor:pointer;
+    border:0;
+    border-radius:999px;
+    padding:12px 16px;
+    font-weight:950;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:#07122b;
+    background: radial-gradient(140px 70px at 30% 30%, rgba(255,255,255,.95), rgba(255,255,255,.60));
+    position:relative;
+    user-select:none;
+  }
+  .btn::before{
+    content:"";
+    position:absolute; inset:-3px;
+    border-radius:999px;
+    background: linear-gradient(90deg, var(--neon1), var(--neon2));
+    z-index:-1;
+    opacity:.95;
+  }
+  .btn:active{transform:scale(.985)}
+  .btn.secondary{
+    color:var(--text);
+    background: rgba(7,12,34,.58);
+    border:1px solid rgba(255,255,255,.14);
+  }
+  .btn.secondary::before{display:none}
+
+  .sliders{
+    margin-top:10px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+  }
+  @media(max-width:520px){ .sliders{grid-template-columns:1fr} }
+  .sliderBox{
+    border-radius:16px;
+    border:1px solid rgba(255,255,255,.12);
+    background: rgba(10,10,25,.26);
+    padding:10px 12px;
+  }
+  .sliderTop{display:flex;justify-content:space-between;gap:10px;color:rgba(234,241,255,.70);font-size:12px;margin-bottom:6px}
+  input[type="range"]{width:100%}
+
+  .qBox{
+    border-radius:18px;
+    border:1px solid rgba(255,79,230,.30);
+    background: rgba(7,12,34,.62);
+    padding:18px;
+    min-height:300px;
+    box-shadow: 0 0 22px rgba(255,79,230,.10), 0 0 18px rgba(108,248,255,.08);
+  }
+  .qMeta{
+    display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;
+    color:rgba(234,241,255,.70);
+    font-size:12px;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    margin-bottom:10px;
+  }
+  .qText{
+    font-size:26px;
+    line-height:1.18;
+    font-weight:950;
+    color:rgba(234,241,255,.92);
+    margin:0 0 16px;
+    text-shadow: 0 0 18px rgba(255,79,230,.06);
+  }
+  @media(max-width:520px){ .qText{font-size:21px} }
+
+  .options{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:12px;
+  }
+  @media(max-width:520px){ .options{grid-template-columns:1fr} }
+
+  .opt{
+    padding:15px 14px;
+    border-radius:999px;
+    border:2px solid rgba(255,255,255,.14);
+    background: rgba(10,10,25,.34);
+    color: rgba(234,241,255,.96);
+    font-weight:950;
+    font-size:18px;
+    letter-spacing:.2px;
+    cursor:pointer;
+    box-shadow: 0 0 18px rgba(255,79,230,.08), 0 0 18px rgba(108,248,255,.05);
+    transition: transform .10s ease, filter .10s ease, border-color .10s ease, box-shadow .10s ease;
+    user-select:none;
+    text-align:center;
+  }
+  .opt:hover{
+    filter:brightness(1.12);
+    border-color: rgba(108,248,255,.28);
+    box-shadow: 0 0 24px rgba(255,79,230,.10), 0 0 26px rgba(108,248,255,.10);
+  }
+  .opt:active{transform:scale(.986)}
+  .opt:disabled{opacity:.82; cursor:not-allowed}
+
+  .opt.good{
+    border-color: rgba(60,255,155,.95);
+    background: rgba(60,255,155,.14);
+    box-shadow: 0 0 26px rgba(60,255,155,.18);
+  }
+  .opt.bad{
+    border-color: rgba(255,77,109,.95);
+    background: rgba(255,77,109,.14);
+    box-shadow: 0 0 26px rgba(255,77,109,.18);
+  }
+
+  table{width:100%;border-collapse:collapse;overflow:hidden;border-radius:16px}
+  th,td{padding:10px 10px;border-bottom:1px solid rgba(255,255,255,.08);font-size:13px}
+  th{color:rgba(234,241,255,.70);text-transform:uppercase;letter-spacing:.06em;font-size:11px}
+  .pill{
+    display:inline-block;padding:4px 9px;border-radius:999px;
+    border:1px solid rgba(108,248,255,.18);
+    color:var(--neon2);font-weight:900;font-size:12px;
+  }
+  .muted{color:rgba(234,241,255,.62);font-size:12px}
+
+  .toast{
+    position:fixed;left:50%;bottom:14px;transform:translateX(-50%);
+    padding:10px 14px;border-radius:14px;
+    background: rgba(7,12,34,.88);
+    border:1px solid rgba(108,248,255,.22);
+    box-shadow:var(--shadow);
+    display:none;
+    max-width:min(860px, calc(100% - 18px));
+    backdrop-filter: blur(10px);
+    font-size:13px;
+    z-index:1000;
+  }
+</style>
+</head>
+
+<body>
+<canvas id="confetti"></canvas>
+
+<audio id="bgm" src="Madde.mp3" loop preload="auto"></audio>
+<audio id="clap" src="alkış.mp3" preload="auto"></audio>
+<audio id="err" src="hata.mp3" preload="auto"></audio>
+
+<div class="wrap">
+  <div class="top">
+    <div class="brand">
+      <div class="logo"></div>
+      <div>
+        <h1>Hüseyin Akdağ İlkokulu Fen Bilimleri 4. Tema Yarışması</h1>
+        <div class="sub">Pro+ • Büyük Soru Bankası • Her oyunda farklı sorular</div>
+      </div>
+    </div>
+    <div class="hud">
+      <div class="chip"><span>SKOR</span> <b id="score">0</b></div>
+      <div class="chip"><span>SÜRE</span> <b id="time">00:00</b></div>
+      <div class="chip"><span>İLERLEME</span> <b id="prog">0/0</b></div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <div class="inner">
+
+        <div class="setup">
+          <div class="row">
+            <div style="flex:1.2;min-width:220px">
+              <label>Öğrenci Adı</label>
+              <input id="name" type="text" maxlength="18" placeholder="Örn: 4H Ecrin"/>
+            </div>
+            <div style="flex:.8;min-width:160px">
+              <label>Soru Sayısı</label>
+              <select id="mode">
+                <option value="10">10 Soru</option>
+                <option value="20">20 Soru</option>
+                <option value="30">30 Soru</option>
+                <option value="40">40 Soru</option>
+              </select>
+            </div>
+            <div style="flex:.6;min-width:150px">
+              <label>&nbsp;</label>
+              <button id="start" class="btn">START</button>
+            </div>
+          </div>
+
+          <div class="row" style="margin-top:10px">
+            <button id="musicToggle" class="btn secondary" style="min-width:190px">MÜZİK: KAPALI</button>
+            <button id="fxToggle" class="btn secondary" style="min-width:190px">FX: AÇIK</button>
+          </div>
+
+          <div class="sliders">
+            <div class="sliderBox">
+              <div class="sliderTop"><span>Müzik Sesi</span><span id="musicPct">60%</span></div>
+              <input id="musicVol" type="range" min="0" max="100" value="60"/>
+            </div>
+            <div class="sliderBox">
+              <div class="sliderTop"><span>FX Sesi</span><span id="fxPct">70%</span></div>
+              <input id="fxVol" type="range" min="0" max="100" value="70"/>
+            </div>
+          </div>
+        </div>
+
+        <div class="qBox">
+          <div class="qMeta">
+            <div id="qNo">HAZIR</div>
+            <div id="qTag">FEN • 4. TEMA</div>
+          </div>
+          <div class="qText" id="qText">Başlamak için adını yazıp START’a bas 🙂</div>
+          <div class="options" id="opts"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="inner">
+        <div style="display:flex;gap:10px;align-items:end;flex-wrap:wrap;justify-content:space-between;margin-bottom:10px">
+          <div style="min-width:170px;flex:1">
+            <label>Skor Tablosu Modu</label>
+            <select id="lbMode">
+              <option value="10">10 Soru</option>
+              <option value="20">20 Soru</option>
+              <option value="30">30 Soru</option>
+              <option value="40">40 Soru</option>
+            </select>
+          </div>
+          <div style="min-width:170px">
+            <label>&nbsp;</label>
+            <button id="refresh" class="btn">YENİLE</button>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>AD</th>
+              <th>SKOR</th>
+              <th>SÜRE</th>
+            </tr>
+          </thead>
+          <tbody id="lbBody">
+            <tr><td colspan="4" class="muted">Henüz kayıt yok.</td></tr>
+          </tbody>
+        </table>
+
+        <div class="muted" style="margin-top:10px">
+          ⌨️ Shift + Z → Skor tablosunu sıfırlar.
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+  /********************
+   * DOM
+   ********************/
+  const $ = (id)=>document.getElementById(id);
+
+  const elScore=$("score"), elTime=$("time"), elProg=$("prog");
+  const elName=$("name"), elMode=$("mode"), elStart=$("start");
+  const elQNo=$("qNo"), elQTag=$("qTag"), elQText=$("qText"), elOpts=$("opts");
+
+  const elMusicToggle=$("musicToggle"), elFxToggle=$("fxToggle");
+  const elMusicVol=$("musicVol"), elFxVol=$("fxVol");
+  const elMusicPct=$("musicPct"), elFxPct=$("fxPct");
+
+  const elLbMode=$("lbMode"), elLbBody=$("lbBody"), elRefresh=$("refresh");
+  const elToast=$("toast");
+
+  const bgm=$("bgm"), clap=$("clap"), err=$("err");
+
+  const pad2 = (n)=>String(n).padStart(2,"0");
+  const fmtTime = (sec)=>{
+    sec = Math.max(0, Math.floor(sec));
+    const m = Math.floor(sec/60), s = sec%60;
+    return `${pad2(m)}:${pad2(s)}`;
+  };
+  const showToast = (msg)=>{
+    elToast.textContent = msg;
+    elToast.style.display = "block";
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(()=> elToast.style.display="none", 1400);
+  };
+  const safePlay = (audioEl)=>{
+    audioEl.currentTime = 0;
+    const p = audioEl.play();
+    if(p && typeof p.catch==="function") p.catch(()=>{});
+  };
+
+  /********************
+   * 🚫 İSİM ARGO/KÜFÜR FİLTRESİ (Pro+)
+   * - normalize: Türkçe harfler sadeleşir
+   * - leetspeak: 0->o, 1->i, 3->e, 4->a, 5->s, 7->t
+   * - boşluk/noktalama temizlenir
+   ********************/
+  const BANNED_WORDS = [
+    // Türkçe (temel)
+    "salak","aptal","gerizekali","gerizekalı","mal","embesil","serefsiz","şerefsiz","seref","şeref",
+    "oç","oc","piç","pic","ibne","orospu","pezevenk","göt","got","yarrak","yarak","sik","s*k",
+    "amk","aq","a.q","a q","amq",
+    // İngilizce (temel)
+    "fuck","shit","bitch","asshole","dick"
+  ];
+
+  function normalizeText(str){
+    return String(str)
+      .toLowerCase()
+      .replace(/[şŞ]/g,"s")
+      .replace(/[ğĞ]/g,"g")
+      .replace(/[ıİ]/g,"i")
+      .replace(/[öÖ]/g,"o")
+      .replace(/[üÜ]/g,"u")
+      .replace(/[çÇ]/g,"c")
+      .replace(/0/g,"o")
+      .replace(/1/g,"i")
+      .replace(/3/g,"e")
+      .replace(/4/g,"a")
+      .replace(/5/g,"s")
+      .replace(/7/g,"t")
+      .replace(/[^a-z0-9]/g,""); // boşluk/simge temizle
+  }
+
+  function hasBadWord(name){
+    const clean = normalizeText(name);
+    return BANNED_WORDS.some(w => clean.includes(normalizeText(w)));
+  }
+
+  /********************
+   * ✅ SADECE 124 SORU (Senin verdiğin setten oyuna uygun olanlar)
+   ********************/
+  const QUESTION_BANK = [
+    {q:"Aşağıdakilerden hangisi maddeyi nitelendiren özelliklerden biri değildir?",a:["Suda yüzme","Mıknatısla çekilme","Kütle","Suyu emme"],c:2},
+    {q:"Suya atıldığında yüzen bir madde aşağıdakilerden hangisi olamaz?",a:["Tahta parçası","Plastik kapak","Taş","Pinpon topu"],c:2},
+    {q:"Aşağıdaki maddelerden hangisi suyu emer?",a:["Alüminyum folyo","Havlu","Cam bardak","Plastik şişe"],c:1},
+    {q:"Mıknatıs tarafından çekilen maddeler aşağıdakilerden hangisidir?",a:["Cam, plastik, altın","Demir, nikel, kobalt","Tahta, kağıt, pamuk","Alüminyum, bakır, gümüş"],c:1},
+    {q:"Aşağıdaki maddelerden hangisi hem suda yüzer hem de mıknatısla çekilmez?",a:["Metal kapak","Plastik top","Çelik çivi","Alüminyum folyo"],c:1},
+    {q:"Değişmeyen madde miktarına ne denir?",a:["Hacim","Kütle","Ağırlık","Brüt kütle"],c:1},
+    {q:"Aşağıdaki ölçü birimlerinden hangisi kütle için kullanılmaz?",a:["Kilogram","Gram","Litre","Miligram"],c:2},
+    {q:"Sıvı bir maddenin net kütlesini bulmak için aşağıdaki formülden hangisi kullanılır?",a:["Brüt kütle + Dara","Brüt kütle – Dara","Net kütle – Dara","Net kütle + Brüt kütle"],c:1},
+    {q:"Bir kabın boşken kütlesi 150 g, içi suyla doluyken kütlesi 500 g’dır. Suyun net kütlesi kaç gramdır?",a:["350","500","650","150"],c:0},
+    {q:"Sıvıların hacmini ölçmek için aşağıdakilerden hangisi kullanılmaz?",a:["Dereceli silindir","Terazi","Ölçülü kap","Beher"],c:1},
+    {q:"1 litre kaç mililitredir?",a:["10","100","1000","10000"],c:2},
+    {q:"Dereceli bir kapta 300 ml su vardır. İçine bir taş atıldığında su seviyesi 450 ml’ye çıkıyor. Taşın hacmi kaç ml’dir?",a:["150","300","450","750"],c:0},
+    {q:"Aşağıdakilerden hangisi madde değildir?",a:["Hava","Işık","Su","Taş"],c:1},
+    {q:"Maddeler doğada kaç halde bulunur?",a:["2","3","4","5"],c:1},
+    {q:"Aşağıdakilerden hangisi katı maddelerin özelliği değildir?",a:["Belirli bir şekli vardır.","Akışkandır.","Sıkıştırılamaz.","Dış etki olmadan şekli değişmez."],c:1},
+    {q:"Aşağıdakilerden hangisi sıvı maddelerin özelliğidir?",a:["Belirli bir şekli yoktur.","Sıkıştırılabilir.","Taneleri akışkan değildir.","Hacmi yoktur."],c:0},
+    {q:"Gaz maddelerle ilgili aşağıdakilerden hangisi yanlıştır?",a:["Bulundukları kabın şeklini alırlar.","Sıkıştırılabilirler.","Belirli bir hacimleri yoktur.","Akışkan değillerdir."],c:3},
+    {q:"Aşağıdakilerden hangisi gaz maddelere örnek değildir?",a:["Oksijen","Su buharı","Tahta","Doğal gaz"],c:2},
+    {q:"Mercimek, pirinç, bulgur gibi maddeler hangi haldedir?",a:["Katı","Sıvı","Gaz","Plazma"],c:0},
+    {q:"Isı alan maddenin sıcaklığı nasıl değişir?",a:["Artar","Azalır","Değişmez","Önce artar sonra azalır"],c:0},
+    {q:"Aşağıdaki olaylardan hangisi maddenin ısı vererek gerçekleştirdiği bir değişimdir?",a:["Erime","Buharlaşma","Donma","Isınma"],c:2},
+    {q:"Katı haldeki bir maddenin ısı alarak sıvı hale geçmesine ne denir?",a:["Donma","Buharlaşma","Erime","Yoğuşma"],c:2},
+    {q:"Sıvı haldeki bir maddenin ısı vererek katı hale geçmesine ne denir?",a:["Erime","Donma","Buharlaşma","Yoğuşma"],c:1},
+    {q:"Sıvı haldeki bir maddenin ısı alarak gaz haline geçmesine ne denir?",a:["Donma","Yoğuşma","Erime","Buharlaşma"],c:3},
+    {q:"Aşağıdakilerden hangisi buharlaşmaya örnek değildir?",a:["Çamaşırların kuruması","Deniz suyunun buharlaşması","Kolonyanın el üzerinde soğukluk hissi vermesi","Suyun donarak buz olması"],c:3},
+    {q:"Buzdolabından çıkarılan su şişesinin dışında su damlacıkları oluşması hangi olaya örnektir?",a:["Erime","Donma","Buharlaşma","Yoğuşma"],c:3},
+    {q:"Aşağıdakilerden hangisi saf madde değildir?",a:["Su","Tuz","Limonata","Altın"],c:2},
+    {q:"İki ya da daha fazla saf maddenin bir araya gelmesiyle oluşan maddelere ne denir?",a:["Element","Bileşik","Karışım","Çözelti"],c:2},
+    {q:"Aşağıdakilerden hangisi karışıma örnek değildir?",a:["Salata","Ayran","Su","Çorba"],c:2},
+    {q:"Karışımları ayırmada kullanılan yöntemlerden hangisi katı-katı karışımları için uygundur?",a:["Süzme","Eleme","Buharlaştırma","Damıtma"],c:1},
+    {q:"Pirinç-su karışımını ayırmak için hangi yöntem kullanılır?",a:["Eleme","Süzme","Mıknatısla ayırma","Yüzdürme"],c:1},
+    {q:"Demir tozu-kum karışımını ayırmak için en uygun yöntem hangisidir?",a:["Eleme","Süzme","Mıknatısla ayırma","Buharlaştırma"],c:2},
+    {q:"Aşağıdaki karışımlardan hangisi eleme yöntemiyle ayrılabilir?",a:["Tuz-su","Un-nohut","Şeker-su","Zeytinyağı-su"],c:1},
+    {q:"Geri dönüşüm kutularından mavi renkli olan hangi atıklar içindir?",a:["Plastik","Kağıt","Cam","Metal"],c:1},
+    {q:"Sarı geri dönüşüm kutusu hangi atıklar için kullanılır?",a:["Cam","Kağıt","Plastik","Organik atık"],c:2},
+    {q:"Geri dönüşümün faydalarından biri değildir?",a:["Doğal kaynakları korur.","Enerji tasarrufu sağlar.","Atık miktarını artırır.","Ekonomiye katkı sağlar."],c:2},
+    {q:"Aşağıdaki maddelerden hangisi suyu emmez?",a:["Sünger","Pamuk","Cam bardak","Havlu"],c:2},
+    {q:"Aşağıdakilerden hangisi mıknatıs tarafından çekilmez?",a:["Çivi","Toplu iğne","Alüminyum folyo","Demir para"],c:2},
+    {q:"Bir maddenin boşlukta kapladığı yere ne denir?",a:["Kütle","Hacim","Ağırlık","Yoğunluk"],c:1},
+    {q:"Sıvıların hacim birimi aşağıdakilerden hangisidir?",a:["Kilogram","Gram","Litre","Metre"],c:2},
+    {q:"Katı maddelerin kütlesi hangi araçla ölçülür?",a:["Dereceli silindir","Terazi","Termometre","Cetvel"],c:1},
+    {q:"Gaz maddelerin özelliklerinden biri değildir?",a:["Sıkıştırılabilir.","Belirli bir şekli yoktur.","Akışkandır.","Belirli bir hacmi vardır."],c:3},
+    {q:"Suyun katı hali aşağıdakilerden hangisidir?",a:["Su buharı","Bulut","Buz","Yağmur"],c:2},
+    {q:"Suyun gaz hali aşağıdakilerden hangisidir?",a:["Kar","Dolu","Su buharı","Çiy"],c:2},
+    {q:"Isı veren maddenin sıcaklığı nasıl değişir?",a:["Artar","Azalır","Değişmez","Önce artar sonra azalır"],c:1},
+    {q:"Aşağıdaki maddelerden hangisi saf madde değildir?",a:["Bakır tel","Şeker","Tuzlu su","Oksijen gazı"],c:2},
+    {q:"Karışımlarla ilgili aşağıdakilerden hangisi doğrudur?",a:["Karışımı oluşturan maddeler özelliklerini kaybeder.","Karışımlar sadece katı halde olur.","Karışımlar en az iki saf maddenin birleşmesiyle oluşur.","Karışımlar her zaman gözle görülür."],c:2},
+    {q:"Un içindeki kepeği ayırmak için hangi yöntem kullanılır?",a:["Süzme","Eleme","Mıknatısla ayırma","Yüzdürme"],c:1},
+    {q:"Demir tozu ve talaş karışımını ayırmak için hangi yöntem uygundur?",a:["Eleme","Süzme","Mıknatısla ayırma","Buharlaştırma"],c:2},
+    {q:"Aşağıdakilerden hangisi suda batar?",a:["Plastik şişe","Tahta parçası","Taş","Pinpon topu"],c:2},
+    {q:"Aşağıdakilerden hangisi suda yüzer?",a:["Çelik kaşık","Metal para","Tahta","Anahtar"],c:2},
+    {q:"Su geçirmeyen kıyafetler hangi özellikteki maddelerden yapılır?",a:["Suyu emen","Suyu emmeyen","Suda batan","Mıknatısla çekilen"],c:1},
+    {q:"Hurdalıklarda metalleri ayırmak için hangi özellikten yararlanılır?",a:["Suda yüzme","Suyu emme","Mıknatısla çekilme","Hacim"],c:2},
+    {q:"Kütle ölçümünde kullanılan birim aşağıdakilerden hangisidir?",a:["Litre","Metre","Kilogram","Santimetre"],c:2},
+    {q:"1 kilogram kaç gramdır?",a:["10","100","1000","10000"],c:2},
+    {q:"Sıvıların kütlesini ölçerken aşağıdakilerden hangisi yapılır?",a:["Sıvı direkt teraziye konur.","Boş kabın kütlesi ölçülür.","Sıvının hacmi ölçülür.","Sıvının rengine bakılır."],c:1},
+    {q:"Brüt kütle ne demektir?",a:["Sıvının net kütlesi","Kabın kütlesi","Sıvı ve kabın toplam kütlesi","Sıvının hacmi"],c:2},
+    {q:"Dara neyi ifade eder?",a:["Sıvının kütlesi","Kabın kütlesi","Toplam kütle","Sıvının hacmi"],c:1},
+    {q:"Hacim ölçmek için kullanılan araçlardan biri değildir?",a:["Dereceli silindir","Terazi","Ölçülü kap","Beher"],c:1},
+    {q:"Katı bir cismin hacmi nasıl ölçülür?",a:["Dereceli kaptaki suyun yükselme miktarından","Terazide tartarak","Cetvelle ölçerek","Gözle tahmin ederek"],c:0},
+    {q:"Maddelerin ortak özellikleri aşağıdakilerden hangisidir?",a:["Kütle ve hacim","Renk ve koku","Suda yüzme","Mıknatısla çekilme"],c:0},
+    {q:"Sıcaklığı ölçen aletin adı nedir?",a:["Barometre","Termometre","Higrometre","Anemometre"],c:1},
+    {q:"Sıcaklık birimi nedir?",a:["Kilogram","Litre","Derece Celsius","Gram"],c:2},
+    {q:"Tuzlu su karışımını ayırmak için hangi yöntem kullanılır?",a:["Eleme","Süzme","Buharlaştırma","Mıknatısla ayırma"],c:2},
+    {q:"Kum ve çakıl karışımını ayırmak için hangi yöntem kullanılır?",a:["Eleme","Süzme","Buharlaştırma","Mıknatısla ayırma"],c:0}
+  ];
+
+  /********************
+   * GAME STATE
+   ********************/
+  const S = {
+    running:false,
+    name:"",
+    mode:10,
+    score:0,
+    idx:0,
+    picked:[],
+    startTs:0,
+    timer:null,
+    musicOn:false,
+    fxOn:true,
+    musicVol:0.60,
+    fxVol:0.70,
+  };
+
+  /********************
+   * CONFETTI
+   ********************/
+  const confettiCanvas = $("confetti");
+  const confCtx = confettiCanvas.getContext("2d");
+  let confetti = [];
+  function resizeConfetti(){
+    confettiCanvas.width = innerWidth;
+    confettiCanvas.height = innerHeight;
+  }
+  addEventListener("resize", resizeConfetti);
+  resizeConfetti();
+  function burstConfetti(){
+    const cx = confettiCanvas.width*0.5;
+    const cy = confettiCanvas.height*0.22;
+    const colors = ["#6cf8ff","#ff4fe6","#3cff9b","#ffffff","#7c5cff"];
+    for(let i=0;i<150;i++){
+      confetti.push({
+        x:cx, y:cy,
+        vx:(Math.random()*2-1)*7,
+        vy:(Math.random()*-1)*12-2,
+        g:0.30,
+        a:1,
+        s:2+Math.random()*3,
+        c:colors[(Math.random()*colors.length)|0]
+      });
+    }
+  }
+  (function confLoop(){
+    confCtx.clearRect(0,0,confettiCanvas.width, confettiCanvas.height);
+    confetti = confetti.filter(p=>p.a>0.02 && p.y<confettiCanvas.height+30);
+    for(const p of confetti){
+      p.vy += p.g;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.a *= 0.985;
+      confCtx.globalAlpha = p.a;
+      confCtx.fillStyle = p.c;
+      confCtx.fillRect(p.x, p.y, p.s*2, p.s*1.2);
+    }
+    requestAnimationFrame(confLoop);
+  })();
+
+  /********************
+   * AUDIO
+   ********************/
+  function applyVolumes(){
+    bgm.volume = S.musicVol;
+    clap.volume = S.fxVol;
+    err.volume  = S.fxVol;
+    elMusicPct.textContent = `${Math.round(S.musicVol*100)}%`;
+    elFxPct.textContent    = `${Math.round(S.fxVol*100)}%`;
+  }
+  function setMusic(on){
+    S.musicOn = on;
+    if(S.musicOn){
+      safePlay(bgm);
+      elMusicToggle.textContent = "MÜZİK: AÇIK";
+    }else{
+      bgm.pause();
+      elMusicToggle.textContent = "MÜZİK: KAPALI";
+    }
+  }
+  function setFx(on){
+    S.fxOn = on;
+    elFxToggle.textContent = S.fxOn ? "FX: AÇIK" : "FX: KAPALI";
+  }
+  elMusicToggle.addEventListener("click", ()=> setMusic(!S.musicOn));
+  elFxToggle.addEventListener("click", ()=> setFx(!S.fxOn));
+  elMusicVol.addEventListener("input", ()=>{
+    S.musicVol = parseInt(elMusicVol.value,10)/100;
+    applyVolumes();
+    if(S.musicOn) bgm.volume = S.musicVol;
+  });
+  elFxVol.addEventListener("input", ()=>{
+    S.fxVol = parseInt(elFxVol.value,10)/100;
+    applyVolumes();
+  });
+
+  /********************
+   * LOCAL + CLOUD (sessiz)
+   ********************/
+  const LS_KEY_PREFIX = "hak_fen4tema_lb_mode_";
+  const QUEUE_KEY = "hak_fen4tema_cloud_queue_v1";
+  const modeKey = (m)=> `${LS_KEY_PREFIX}${m}`;
+
+  function loadLocal(mode){
+    try{ return JSON.parse(localStorage.getItem(modeKey(mode))||"[]"); }catch{ return []; }
+  }
+  function saveLocal(mode, list){
+    localStorage.setItem(modeKey(mode), JSON.stringify(list));
+  }
+  function addLocalEntry(entry){
+    const list = loadLocal(entry.mode);
+    list.push(entry);
+    list.sort((a,b)=> b.score-a.score || a.timeSec-b.timeSec || b.ts-a.ts);
+    saveLocal(entry.mode, list.slice(0, 50));
+  }
+  function loadQueue(){
+    try{ return JSON.parse(localStorage.getItem(QUEUE_KEY)||"[]"); }catch{ return []; }
+  }
+  function saveQueue(q){ localStorage.setItem(QUEUE_KEY, JSON.stringify(q)); }
+
+  // Firebase opsiyonel
+  const firebaseConfig = {
+    apiKey: "PASTE_HERE",
+    authDomain: "PASTE_HERE",
+    projectId: "PASTE_HERE",
+    storageBucket: "PASTE_HERE",
+    messagingSenderId: "PASTE_HERE",
+    appId: "PASTE_HERE"
+  };
+  const hasConfig = (cfg)=>cfg && Object.values(cfg).every(v => typeof v==="string" && v && !v.includes("PASTE_HERE"));
+  let cloudReady = false;
+  let db = null;
+
+  let addDocFn=null, getDocsFn=null, queryFn=null, whereFn=null, orderByFn=null, limitFn=null, collectionFn=null, serverTimestampFn=null, initializeAppFn=null, getFirestoreFn=null;
+
+  async function initCloudIfPossible(){
+    if(!hasConfig(firebaseConfig)) return;
+    try{
+      ({ initializeApp: initializeAppFn } = await import("https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js"));
+      ({ getFirestore: getFirestoreFn, collection: collectionFn, addDoc: addDocFn,
+         query: queryFn, where: whereFn, orderBy: orderByFn, limit: limitFn, getDocs: getDocsFn,
+         serverTimestamp: serverTimestampFn } = await import("https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js"));
+      const app = initializeAppFn(firebaseConfig);
+      db = getFirestoreFn(app);
+      cloudReady = true;
+    }catch{
+      cloudReady = false;
+      db = null;
+    }
+  }
+  async function enqueueCloud(entry){
+    const q = loadQueue();
+    const id = (crypto.randomUUID ? crypto.randomUUID() : (Date.now()+"_"+Math.random()));
+    q.push({ id, ...entry });
+    saveQueue(q);
+  }
+  async function flushCloud(){
+    if(!cloudReady || !db) return;
+    if(!navigator.onLine) return;
+    const q = loadQueue();
+    if(!q.length) return;
+
+    const remaining = [];
+    for(const item of q){
+      try{
+        await addDocFn(collectionFn(db,"leaderboard"), {
+          name: item.name,
+          score: item.score,
+          timeSec: item.timeSec,
+          mode: item.mode,
+          createdAt: serverTimestampFn()
+        });
+      }catch{
+        remaining.push(item);
+      }
+    }
+    saveQueue(remaining);
+  }
+  async function loadCloudTop(mode){
+    if(!cloudReady || !db) return null;
+    try{
+      const q = queryFn(
+        collectionFn(db,"leaderboard"),
+        whereFn("mode","==",mode),
+        orderByFn("score","desc"),
+        orderByFn("timeSec","asc"),
+        limitFn(20)
+      );
+      const snap = await getDocsFn(q);
+      const out = [];
+      snap.forEach(doc=>{
+        const x = doc.data();
+        out.push({ name: x.name||"", score: x.score||0, timeSec: x.timeSec ?? 999999 });
+      });
+      return out;
+    }catch{
+      return null;
+    }
+  }
+  setInterval(flushCloud, 20000);
+  addEventListener("online", flushCloud);
+
+  /********************
+   * LEADERBOARD UI
+   ********************/
+  const escapeHtml = (s)=> String(s).replace(/[&<>"']/g, m => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[m]));
+  async function renderLeaderboard(){
+    const mode = parseInt(elLbMode.value,10);
+    let rows = null;
+
+    const cloud = await loadCloudTop(mode);
+    if(cloud && cloud.length){
+      rows = cloud.map((r,i)=>({ rank:i+1, name:r.name, score:r.score, timeSec:r.timeSec }));
+    } else {
+      const local = loadLocal(mode).slice(0,20);
+      rows = local.map((r,i)=>({ rank:i+1, name:r.name, score:r.score, timeSec:r.timeSec }));
+    }
+
+    if(!rows || !rows.length){
+      elLbBody.innerHTML = `<tr><td colspan="4" class="muted">Henüz kayıt yok.</td></tr>`;
+      return;
+    }
+
+    elLbBody.innerHTML = rows.map(r=>`
+      <tr>
+        <td><span class="pill">${r.rank}</span></td>
+        <td>${escapeHtml(r.name)}</td>
+        <td><b>${r.score}</b></td>
+        <td>${fmtTime(r.timeSec)}</td>
+      </tr>
+    `).join("");
+  }
+  elRefresh.addEventListener("click", renderLeaderboard);
+  elLbMode.addEventListener("change", renderLeaderboard);
+
+  /********************
+   * GAME FLOW
+   ********************/
+  function selectedMode(){
+    const v = parseInt(elMode.value,10);
+    return [10,20,30,40].includes(v) ? v : 10;
+  }
+  function shuffle(arr){
+    const a = arr.slice();
+    for(let i=a.length-1;i>0;i--){
+      const j = (Math.random()*(i+1))|0;
+      [a[i],a[j]]=[a[j],a[i]];
+    }
+    return a;
+  }
+  function pickQuestions(n){
+    const pool = shuffle(QUESTION_BANK);
+    return pool.slice(0, Math.min(n, pool.length));
+  }
+  function lockOptions(lock){
+    [...elOpts.querySelectorAll("button")].forEach(b=> b.disabled = lock);
+  }
+  function startTimer(){
+    stopTimer();
+    S.timer = setInterval(()=>{
+      if(!S.running) return;
+      const sec = (Date.now() - S.startTs)/1000;
+      elTime.textContent = fmtTime(sec);
+    }, 250);
+  }
+  function stopTimer(){
+    if(S.timer) clearInterval(S.timer);
+    S.timer = null;
+  }
+
+  function renderQuestion(){
+    const total = S.picked.length;
+    const q = S.picked[S.idx];
+    if(!q){ endGame(); return; }
+
+    elQNo.textContent = `Soru ${S.idx+1}`;
+    elQTag.textContent = "FEN • 4. TEMA";
+    elQText.textContent = q.q;
+    elProg.textContent = `${S.idx+1}/${total}`;
+
+    elOpts.innerHTML = "";
+    q.a.forEach((txt, i)=>{
+      const b = document.createElement("button");
+      b.className = "opt";
+      b.textContent = txt;
+      b.onclick = ()=> choose(i);
+      elOpts.appendChild(b);
+    });
+  }
+
+  function choose(choiceIndex){
+    if(!S.running) return;
+    const q = S.picked[S.idx];
+    lockOptions(true);
+
+    const buttons = [...elOpts.querySelectorAll("button")];
+    const correctBtn = buttons[q.c];
+    const pickedBtn  = buttons[choiceIndex];
+
+    if(choiceIndex === q.c){
+      pickedBtn.classList.add("good");
+      S.score += 100;
+      elScore.textContent = String(S.score);
+      if(S.fxOn) safePlay(clap);
+      burstConfetti();
+    }else{
+      pickedBtn.classList.add("bad");
+      correctBtn.classList.add("good");
+      if(S.fxOn) safePlay(err);
+    }
+
+    setTimeout(()=>{
+      S.idx++;
+      renderQuestion();
+    }, 900);
+  }
+
+  async function endGame(){
+    S.running = false;
+    stopTimer();
+    lockOptions(true);
+
+    const timeSec = Math.floor((Date.now() - S.startTs)/1000);
+    elTime.textContent = fmtTime(timeSec);
+
+    elQNo.textContent = "BİTTİ";
+    elQTag.textContent = `MOD: ${S.mode} SORU`;
+    elQText.textContent = `Tebrikler ${S.name}!  Skor: ${S.score} • Süre: ${fmtTime(timeSec)}`;
+    elOpts.innerHTML = "";
+
+    const entry = { name:S.name, score:S.score, timeSec, mode:S.mode, ts:Date.now() };
+    addLocalEntry(entry);
+    await enqueueCloud(entry);
+    await flushCloud();
+    await renderLeaderboard();
+    showToast("Kaydedildi ✅");
+  }
+
+  async function startGame(){
+    const name = (elName.value||"").trim();
+    if(!name){ showToast("İsim yazalım 🙂"); elName.focus(); return; }
+
+    // 🚫 KÜFÜR/ARGO ENGELİ
+    if(hasBadWord(name)){
+      showToast("Uygun olmayan bir isim kullandın ❌");
+      elName.value = "";
+      elName.focus();
+      return;
+    }
+
+    S.name = name.slice(0,18);
+    S.mode = selectedMode();
+    S.score = 0;
+    S.idx = 0;
+    S.picked = pickQuestions(S.mode);
+    S.running = true;
+    S.startTs = Date.now();
+
+    elScore.textContent = "0";
+    elTime.textContent = "00:00";
+
+    if(!S.musicOn) setMusic(true);
+    else if(bgm.paused) safePlay(bgm);
+
+    startTimer();
+    renderQuestion();
+    await renderLeaderboard();
+  }
+
+  elStart.addEventListener("click", async ()=>{
+    if(!initCloudIfPossible._done){
+      initCloudIfPossible._done = true;
+      await initCloudIfPossible();
+    }
+    await startGame();
+  });
+  elName.addEventListener("keydown", (e)=>{ if(e.key==="Enter") elStart.click(); });
+
+  // Shift+Z reset
+  addEventListener("keydown", async (e)=>{
+    if(e.shiftKey && e.key.toLowerCase()==="z"){
+      for(const m of [10,20,30,40]) localStorage.removeItem(modeKey(m));
+      localStorage.removeItem(QUEUE_KEY);
+      await renderLeaderboard();
+      showToast("Sıfırlandı ✅");
+    }
+  });
+
+  // init
+  (function init(){
+    S.musicVol = parseInt(elMusicVol.value,10)/100;
+    S.fxVol    = parseInt(elFxVol.value,10)/100;
+    applyVolumes();
+    setFx(true);
+    setMusic(false);
+    renderLeaderboard();
+  })();
+</script>
+</body>
+</html>
