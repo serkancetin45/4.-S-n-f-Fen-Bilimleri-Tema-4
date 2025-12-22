@@ -7,128 +7,193 @@
 
   <style>
     :root{
-      --bg1:#050913;
-      --bg2:#06112a;
-      --panel:#071a3a;
-      --panel2:#07132b;
-      --neon:#2ee6ff;
-      --neon2:#7b5cff;
+      --bg0:#060314;
+      --bg1:#0a0830;
+
+      --panel: rgba(6,6,18,.72);
+
+      /* Mor-Mavi Neon */
+      --blue:#43b7ff;
+      --purple:#b45cff;
+      --pink:#ff4fd8;
+
+      --text:#f4f8ff;
+      --muted:#b7bce8;
+
       --good:#22c55e;
       --bad:#ef4444;
-      --text:#eaf2ff;
-      --muted:#9ab0d6;
-      --line:rgba(46,230,255,.22);
-      --shadow: 0 20px 60px rgba(0,0,0,.55);
-      --radius:18px;
+
+      --radius:22px;
+      --shadow: 0 30px 90px rgba(0,0,0,.62);
+
+      --glowBlue: 0 0 18px rgba(67,183,255,.22), 0 0 46px rgba(67,183,255,.12);
+      --glowBlueStrong: 0 0 24px rgba(67,183,255,.32), 0 0 70px rgba(67,183,255,.18);
+      --glowPurple: 0 0 18px rgba(180,92,255,.22), 0 0 46px rgba(180,92,255,.12);
+
+      /* Arka plan görseli */
+      --bgImg: none;
     }
+
     *{box-sizing:border-box}
     body{
       margin:0;
       font-family: ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;
       color:var(--text);
-      background:
-        radial-gradient(1200px 800px at 20% 10%, rgba(46,230,255,.10), transparent 55%),
-        radial-gradient(1000px 700px at 85% 20%, rgba(123,92,255,.12), transparent 55%),
-        linear-gradient(180deg,var(--bg1),var(--bg2));
+
+      /* Görsel + gradient katmanlar */
+      background-image:
+        linear-gradient(180deg, rgba(6,3,20,.78), rgba(10,8,48,.74)),
+        var(--bgImg);
+      background-size: cover, cover;
+      background-position: center, center;
+      background-attachment: fixed, fixed;
+
+      /* Neon ışıklar üstte */
+      background-color: #07051a;
+      background-blend-mode: normal;
+
       min-height:100vh;
       overflow-x:hidden;
     }
-    .wrap{
-      max-width:1200px;
-      margin:0 auto;
-      padding:18px 14px 24px;
+
+    /* Body neon ışık parıltıları */
+    body::before{
+      content:"";
+      position:fixed; inset:0;
+      pointer-events:none;
+      background:
+        radial-gradient(1100px 700px at 18% 18%, rgba(180,92,255,.18), transparent 55%),
+        radial-gradient(1000px 650px at 85% 22%, rgba(67,183,255,.22), transparent 55%),
+        radial-gradient(1200px 900px at 50% 92%, rgba(255,79,216,.08), transparent 62%);
+      z-index:-1;
     }
 
-    /* Header */
-    .topbar{
-      display:flex;
-      gap:14px;
-      align-items:center;
-      justify-content:space-between;
-      flex-wrap:wrap;
-      margin-bottom:14px;
+    .wrap{ max-width:1200px; margin:0 auto; padding:18px 14px 24px; }
+
+    /* ===== Neon Frame ===== */
+    .neonFrame{
+      position:relative;
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(8,7,22,.78), rgba(8,7,22,.58));
+      box-shadow: var(--shadow);
+      overflow:hidden;
     }
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      user-select:none;
+    .neonFrame::before{
+      content:"";
+      position:absolute; inset:-2px;
+      background: conic-gradient(from 200deg,
+        rgba(67,183,255,.0),
+        rgba(67,183,255,.88),
+        rgba(180,92,255,.88),
+        rgba(255,79,216,.55),
+        rgba(67,183,255,.88),
+        rgba(67,183,255,.0)
+      );
+      filter: blur(8px);
+      opacity:.90;
+      z-index:0;
     }
-    .logo{
-      width:48px;height:48px;border-radius:16px;
+    .neonFrame::after{
+      content:"";
+      position:absolute; inset:1px;
+      border-radius: calc(var(--radius) - 2px);
       background:
-        radial-gradient(circle at 30% 30%, rgba(46,230,255,.85), rgba(46,230,255,.15) 55%, transparent 60%),
-        radial-gradient(circle at 70% 70%, rgba(123,92,255,.9), rgba(123,92,255,.1) 55%, transparent 60%),
-        linear-gradient(135deg, rgba(46,230,255,.18), rgba(123,92,255,.12));
-      border:1px solid rgba(46,230,255,.35);
-      box-shadow: 0 0 22px rgba(46,230,255,.20), 0 0 34px rgba(123,92,255,.12);
+        radial-gradient(900px 500px at 22% 0%, rgba(67,183,255,.10), transparent 60%),
+        radial-gradient(900px 500px at 85% 10%, rgba(180,92,255,.12), transparent 60%),
+        linear-gradient(180deg, rgba(8,7,22,.82), rgba(8,7,22,.58));
+      z-index:0;
     }
-    .title{
-      display:flex;
-      flex-direction:column;
-      line-height:1.1;
+    .content{ position:relative; z-index:1; padding:14px; }
+
+    /* Skor tablosu paneline özel: mavi parlak neon + görsel dokusu */
+    .lbFrame::before{
+      opacity:1;
+      filter: blur(9px);
+      background: conic-gradient(from 220deg,
+        rgba(67,183,255,.0),
+        rgba(67,183,255,.95),
+        rgba(67,183,255,.65),
+        rgba(67,183,255,.95),
+        rgba(67,183,255,.0)
+      );
+    }
+    .lbFrame::after{
+      background:
+        linear-gradient(180deg, rgba(6,3,20,.72), rgba(10,8,48,.62)),
+        radial-gradient(900px 520px at 30% 0%, rgba(67,183,255,.16), transparent 60%),
+        radial-gradient(900px 520px at 85% 10%, rgba(67,183,255,.12), transparent 60%),
+        var(--bgImg);
+      background-size: cover, cover, cover, cover;
+      background-position: center, center, center, center;
+      opacity:.98;
+    }
+
+    /* ===== Header ===== */
+    .topbar{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:14px; flex-wrap:wrap; margin-bottom:12px;
+    }
+    .brand{ display:flex; align-items:center; gap:12px; user-select:none; }
+    .logo{
+      width:46px; height:46px; border-radius:16px;
+      background:
+        radial-gradient(circle at 30% 30%, rgba(180,92,255,.95), rgba(180,92,255,.18) 56%, transparent 60%),
+        radial-gradient(circle at 70% 70%, rgba(67,183,255,.95), rgba(67,183,255,.18) 56%, transparent 60%),
+        linear-gradient(135deg, rgba(180,92,255,.12), rgba(67,183,255,.10));
+      box-shadow: var(--glowBlue), var(--glowPurple);
+      border:1px solid rgba(67,183,255,.28);
     }
     .title h1{
-      font-size:18px;
       margin:0;
+      font-size:18px;
+      font-weight:1000;
       letter-spacing:.2px;
-      font-weight:800;
-      text-shadow: 0 0 16px rgba(46,230,255,.18);
+      text-shadow: 0 0 18px rgba(67,183,255,.18);
     }
     .title small{
-      margin-top:3px;
+      display:block;
+      margin-top:4px;
       color:var(--muted);
-      font-weight:600;
+      font-weight:900;
       font-size:12px;
     }
 
-    /* Controls */
-    .controls{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      flex-wrap:wrap;
-    }
+    /* ===== Pills (Audio) ===== */
+    .controls{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
     .pill{
-      background: linear-gradient(180deg, rgba(7,26,58,.9), rgba(7,19,43,.88));
-      border:1px solid rgba(46,230,255,.25);
-      border-radius:999px;
-      padding:8px 10px;
-      box-shadow: 0 0 0 1px rgba(123,92,255,.08) inset;
-      display:flex;
-      align-items:center;
-      gap:10px;
+      display:flex; align-items:center; gap:10px;
+      padding:10px 12px;
+      border-radius: 999px;
+      background: rgba(0,0,0,.22);
+      border:1px solid rgba(67,183,255,.22);
+      box-shadow: 0 0 0 1px rgba(180,92,255,.08) inset, var(--glowBlue);
+      backdrop-filter: blur(6px);
     }
     .pill label{
       font-size:12px;
       color:var(--muted);
-      font-weight:700;
+      font-weight:1000;
       white-space:nowrap;
     }
-    input[type="range"]{ accent-color: var(--neon); width:140px;}
+    input[type="range"]{
+      width:160px;
+      accent-color: var(--purple);
+    }
     .btn{
-      border:none;
+      border:none; cursor:pointer;
+      font-weight:1000;
+      padding:8px 12px;
+      border-radius: 999px;
       color:var(--text);
-      padding:10px 12px;
-      border-radius:12px;
-      cursor:pointer;
-      font-weight:800;
-      letter-spacing:.2px;
-      background: linear-gradient(180deg, rgba(46,230,255,.18), rgba(46,230,255,.08));
-      border:1px solid rgba(46,230,255,.35);
-      box-shadow: 0 0 18px rgba(46,230,255,.12);
+      background: rgba(0,0,0,.18);
+      border:1px solid rgba(180,92,255,.40);
+      box-shadow: var(--glowPurple);
       transition: transform .06s ease, filter .2s ease;
     }
-    .btn:hover{ filter:brightness(1.06);}
-    .btn:active{ transform: translateY(1px);}
+    .btn:hover{ filter:brightness(1.10); }
+    .btn:active{ transform: translateY(1px); }
 
-    .btn.secondary{
-      background: linear-gradient(180deg, rgba(123,92,255,.16), rgba(123,92,255,.07));
-      border:1px solid rgba(123,92,255,.35);
-      box-shadow: 0 0 18px rgba(123,92,255,.12);
-    }
-
-    /* Layout */
+    /* ===== Layout ===== */
     .grid{
       display:grid;
       grid-template-columns: 1.35fr .65fr;
@@ -136,148 +201,150 @@
       align-items:start;
     }
     @media (max-width: 980px){
-      .grid{grid-template-columns:1fr; }
-      input[type="range"]{width:160px;}
+      .grid{ grid-template-columns: 1fr; }
+      input[type="range"]{ width:170px; }
     }
 
-    .card{
-      background: linear-gradient(180deg, rgba(7,26,58,.88), rgba(7,19,43,.82));
-      border:1px solid rgba(46,230,255,.22);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow:hidden;
-      position:relative;
+    .hdrRow{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:10px; flex-wrap:wrap;
+      padding:10px 12px;
     }
-    .card .hdr{
-      padding:14px 14px 12px;
-      border-bottom:1px solid rgba(46,230,255,.12);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      flex-wrap:wrap;
-    }
-    .card .hdr h2{
+    .hdrRow h2{
       margin:0;
       font-size:14px;
+      font-weight:1000;
       letter-spacing:.2px;
-      font-weight:900;
-      color:#f3f8ff;
-      text-shadow: 0 0 18px rgba(46,230,255,.14);
+      color:var(--text);
+      text-shadow: 0 0 16px rgba(67,183,255,.14);
     }
-    .meta{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      flex-wrap:wrap;
-      justify-content:flex-end;
-    }
+
+    .badges{ display:flex; gap:8px; flex-wrap:wrap; }
     .badge{
-      padding:6px 10px;
+      padding:7px 10px;
       border-radius:999px;
       font-size:12px;
-      font-weight:900;
-      border:1px solid rgba(46,230,255,.25);
+      font-weight:1000;
       background: rgba(0,0,0,.18);
-      color:var(--text);
+      border:1px solid rgba(67,183,255,.22);
+      box-shadow: var(--glowBlue);
       white-space:nowrap;
     }
-    .badge.good{ border-color: rgba(34,197,94,.45); box-shadow: 0 0 16px rgba(34,197,94,.10) inset;}
-    .badge.bad{ border-color: rgba(239,68,68,.45); box-shadow: 0 0 16px rgba(239,68,68,.10) inset;}
+    .divider{
+      height:1px;
+      background: linear-gradient(90deg, transparent, rgba(67,183,255,.46), rgba(180,92,255,.40), transparent);
+      margin:0 12px 10px;
+      opacity:.90;
+    }
 
-    .body{ padding:14px;}
-
-    /* Start screen */
+    /* ===== Start Panel ===== */
     .startRow{
       display:grid;
       grid-template-columns: 1fr 1fr;
       gap:12px;
-      align-items:end;
+      padding:0 12px 12px;
     }
-    @media (max-width: 680px){
-      .startRow{ grid-template-columns:1fr;}
-    }
+    @media (max-width: 680px){ .startRow{ grid-template-columns:1fr; } }
+
     .field label{
       display:block;
       font-size:12px;
       color:var(--muted);
-      font-weight:800;
+      font-weight:1000;
       margin:0 0 6px;
     }
-    .field input, .field select{
+    .field input{
       width:100%;
       padding:12px 12px;
-      border-radius:14px;
-      border:1px solid rgba(46,230,255,.25);
-      background: rgba(0,0,0,.18);
+      border-radius: 14px;
+      border:1px solid rgba(67,183,255,.18);
+      background: rgba(0,0,0,.22);
       color:var(--text);
       outline:none;
-      font-weight:800;
+      font-weight:1000;
       letter-spacing:.2px;
-      box-shadow: 0 0 0 1px rgba(123,92,255,.06) inset;
+      box-shadow: 0 0 0 1px rgba(180,92,255,.08) inset;
     }
-    .modes{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-    }
+
+    .modes{ display:flex; gap:10px; flex-wrap:wrap; }
     .modeBtn{
       flex:1 1 90px;
       padding:10px 10px;
-      border-radius:14px;
-      border:1px solid rgba(46,230,255,.25);
-      background: linear-gradient(180deg, rgba(0,0,0,.16), rgba(0,0,0,.06));
+      border-radius: 16px;
+      border:1px solid rgba(67,183,255,.22);
+      background: rgba(0,0,0,.18);
       color:var(--text);
-      font-weight:900;
+      font-weight:1000;
       cursor:pointer;
-      transition: transform .06s ease, filter .2s ease;
       text-align:center;
+      box-shadow: var(--glowBlue);
+      transition: transform .06s ease, filter .2s ease, border-color .2s ease, box-shadow .2s ease;
       user-select:none;
     }
-    .modeBtn:hover{ filter:brightness(1.06);}
-    .modeBtn:active{ transform: translateY(1px);}
+    .modeBtn:hover{ filter:brightness(1.08); }
+    .modeBtn:active{ transform: translateY(1px); }
     .modeBtn.active{
-      border-color: rgba(46,230,255,.55);
-      box-shadow: 0 0 0 1px rgba(46,230,255,.18) inset, 0 0 22px rgba(46,230,255,.12);
-      background:
-        radial-gradient(400px 160px at 20% 0%, rgba(46,230,255,.18), transparent 60%),
-        linear-gradient(180deg, rgba(7,26,58,.75), rgba(7,19,43,.60));
+      border-color: rgba(180,92,255,.72);
+      box-shadow: 0 0 0 1px rgba(180,92,255,.22) inset, var(--glowPurple), var(--glowBlue);
     }
 
-    /* Quiz */
+    .startFooter{
+      display:flex;
+      justify-content:flex-end;
+      gap:10px;
+      padding:0 12px 12px;
+    }
+    .startBtn{
+      border:none; cursor:pointer;
+      padding:12px 18px;
+      border-radius: 16px;
+      font-weight:1100;
+      letter-spacing:.2px;
+      color:var(--text);
+      background: rgba(0,0,0,.22);
+      border:1px solid rgba(180,92,255,.72);
+      box-shadow: 0 0 0 1px rgba(180,92,255,.20) inset, var(--glowPurple);
+      transition: transform .06s ease, filter .2s ease;
+    }
+    .startBtn:hover{ filter:brightness(1.10); }
+    .startBtn:active{ transform: translateY(1px); }
+
+    /* ===== Quiz Panel ===== */
     .qbox{
+      margin:0 12px 12px;
       padding:14px;
       border-radius: 18px;
-      border:1px solid rgba(46,230,255,.22);
-      background:
-        radial-gradient(900px 420px at 30% 0%, rgba(46,230,255,.10), transparent 60%),
-        radial-gradient(900px 420px at 90% 20%, rgba(123,92,255,.10), transparent 60%),
-        linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.06));
-      box-shadow: 0 0 0 1px rgba(123,92,255,.06) inset;
-      min-height: 190px;
+      border:1px solid rgba(67,183,255,.18);
+      background: rgba(0,0,0,.18);
+      box-shadow: var(--glowBlue);
+      min-height: 240px;
+      position:relative;
+      overflow:hidden;
     }
-    .qTop{
-      display:flex;
-      justify-content:space-between;
-      align-items:flex-start;
-      gap:10px;
-      margin-bottom:10px;
+
+    .qbox.flashGood::before,
+    .qbox.flashBad::before{
+      content:"";
+      position:absolute; inset:-2px;
+      filter: blur(10px);
+      opacity:.55;
+      pointer-events:none;
     }
-    .qIdx{
-      font-weight:900;
-      color:var(--muted);
-      font-size:12px;
-    }
+    .qbox.flashGood::before{ background: radial-gradient(circle at 50% 10%, rgba(34,197,94,.55), transparent 60%); }
+    .qbox.flashBad::before{ background: radial-gradient(circle at 50% 10%, rgba(239,68,68,.55), transparent 60%); }
+
+    .qTop{ display:flex; justify-content:space-between; gap:10px; margin-bottom:10px; }
+    .qIdx{ font-weight:1000; color:var(--muted); font-size:12px; }
     .qText{
       margin:6px 0 0;
-      font-size:18px;
-      font-weight:900;
+      font-size:19px;
+      font-weight:1100;
       line-height:1.25;
       letter-spacing:.1px;
+      color: var(--text);
+      text-shadow: 0 0 18px rgba(67,183,255,.10);
     }
-    @media (max-width: 520px){
-      .qText{ font-size:17px;}
-    }
+    @media (max-width: 520px){ .qText{ font-size:17.5px; } }
 
     .opts{
       display:grid;
@@ -285,99 +352,167 @@
       gap:10px;
       margin-top:12px;
     }
-    @media (max-width: 650px){
-      .opts{ grid-template-columns:1fr; }
-    }
+    @media (max-width: 650px){ .opts{ grid-template-columns:1fr; } }
+
     .opt{
       padding:12px 12px;
       border-radius:16px;
-      border:1px solid rgba(46,230,255,.20);
-      background: rgba(0,0,0,.16);
+      border:1px solid rgba(67,183,255,.18);
+      background: rgba(0,0,0,.18);
       cursor:pointer;
-      font-weight:900;
+      font-weight:1000;
       line-height:1.2;
-      transition: transform .06s ease, border-color .15s ease, box-shadow .15s ease, background .15s ease;
+      transition: transform .06s ease, border-color .16s ease, box-shadow .16s ease, filter .16s ease;
       user-select:none;
-      position:relative;
-      overflow:hidden;
+      color: var(--text);
+      box-shadow: 0 0 0 1px rgba(180,92,255,.06) inset;
     }
-    .opt:hover{ border-color: rgba(46,230,255,.42);}
+    .opt:hover{
+      filter:brightness(1.06);
+      border-color: rgba(67,183,255,.46);
+      box-shadow: var(--glowBlueStrong);
+    }
     .opt:active{ transform: translateY(1px); }
     .opt .k{
       display:inline-block;
       min-width:26px;
       margin-right:6px;
-      color: rgba(46,230,255,.95);
-      text-shadow: 0 0 18px rgba(46,230,255,.15);
+      color: rgba(180,92,255,.96);
+      text-shadow: 0 0 14px rgba(180,92,255,.18);
     }
-
     .opt.correct{
-      border-color: rgba(34,197,94,.70);
-      box-shadow: 0 0 0 1px rgba(34,197,94,.15) inset, 0 0 22px rgba(34,197,94,.10);
+      border-color: rgba(34,197,94,.72);
+      box-shadow: 0 0 0 1px rgba(34,197,94,.15) inset, 0 0 28px rgba(34,197,94,.16);
       background: rgba(34,197,94,.10);
     }
     .opt.wrong{
-      border-color: rgba(239,68,68,.70);
-      box-shadow: 0 0 0 1px rgba(239,68,68,.15) inset, 0 0 22px rgba(239,68,68,.10);
+      border-color: rgba(239,68,68,.72);
+      box-shadow: 0 0 0 1px rgba(239,68,68,.15) inset, 0 0 28px rgba(239,68,68,.16);
       background: rgba(239,68,68,.10);
     }
-    .opt.disabled{
-      pointer-events:none;
-      opacity:.92;
+    .opt.disabled{ pointer-events:none; opacity:.93; }
+
+    .mini{
+      margin-top:10px;
+      color:var(--muted);
+      font-weight:900;
+      font-size:12px;
     }
 
-    .footerRow{
+    .feedback{
+      margin-top:10px;
+      font-weight:1100;
+      font-size:13px;
+      letter-spacing:.2px;
+      text-shadow: 0 0 14px rgba(67,183,255,.14);
+      min-height:18px;
+    }
+    .feedback.good{ color: rgba(34,197,94,.95); text-shadow: 0 0 14px rgba(34,197,94,.18); }
+    .feedback.bad{ color: rgba(239,68,68,.95); text-shadow: 0 0 14px rgba(239,68,68,.18); }
+
+    /* ===== Finish Panel ===== */
+    .finishPanel{
+      margin:0 12px 12px;
+      padding:14px;
+      border-radius: 18px;
+      border:1px solid rgba(180,92,255,.24);
+      background: rgba(0,0,0,.18);
+      box-shadow: var(--glowPurple);
+      display:none;
+    }
+    .finishTitle{
+      margin:0 0 8px;
+      font-size:16px;
+      font-weight:1100;
+      letter-spacing:.2px;
+      text-shadow: 0 0 18px rgba(180,92,255,.14);
+    }
+    .finishGrid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+      margin-top:8px;
+    }
+    @media (max-width: 520px){ .finishGrid{ grid-template-columns:1fr; } }
+    .stat{
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid rgba(67,183,255,.16);
+      background: rgba(0,0,0,.14);
+      box-shadow: var(--glowBlue);
+      font-weight:1000;
+      color:var(--text);
+    }
+    .stat small{ display:block; color:var(--muted); font-weight:900; margin-bottom:4px; }
+    .finishBtns{
       display:flex;
       gap:10px;
-      justify-content:space-between;
-      align-items:center;
       flex-wrap:wrap;
+      justify-content:flex-end;
       margin-top:12px;
     }
-    .mini{
-      color:var(--muted);
-      font-weight:800;
-      font-size:12px;
-    }
-
-    /* Leaderboard */
-    table{ width:100%; border-collapse:collapse; }
-    th, td{
-      padding:10px 8px;
-      border-bottom:1px solid rgba(46,230,255,.10);
-      text-align:left;
-      font-size:12px;
-      font-weight:800;
+    .btnPrimary{
+      border:none; cursor:pointer;
+      padding:12px 14px;
+      border-radius: 14px;
+      font-weight:1100;
       color:var(--text);
-      vertical-align:top;
+      background: rgba(0,0,0,.22);
+      border:1px solid rgba(67,183,255,.56);
+      box-shadow: var(--glowBlueStrong);
     }
-    th{ color:var(--muted); font-weight:900; }
-    .right{ text-align:right; }
-    .rowTop{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      margin:0 0 10px;
+    .btnGhost{
+      border:none; cursor:pointer;
+      padding:12px 14px;
+      border-radius: 14px;
+      font-weight:1100;
+      color:var(--text);
+      background: rgba(0,0,0,.16);
+      border:1px solid rgba(180,92,255,.40);
+      box-shadow: var(--glowPurple);
     }
-    .rowTop .tabs{
-      display:flex; gap:8px; flex-wrap:wrap;
-    }
+    .btnPrimary:active,.btnGhost:active{ transform: translateY(1px); }
+
+    /* ===== Leaderboard ===== */
+    .tabs{ display:flex; gap:8px; flex-wrap:wrap; padding:0 12px 10px; }
     .tab{
       padding:8px 10px;
       border-radius:14px;
-      border:1px solid rgba(46,230,255,.18);
-      background: rgba(0,0,0,.14);
+      border:1px solid rgba(67,183,255,.18);
+      background: rgba(0,0,0,.16);
       color:var(--text);
       cursor:pointer;
-      font-weight:900;
+      font-weight:1000;
       font-size:12px;
       user-select:none;
+      box-shadow: var(--glowBlue);
     }
     .tab.active{
-      border-color: rgba(46,230,255,.55);
-      box-shadow: 0 0 0 1px rgba(46,230,255,.14) inset, 0 0 18px rgba(46,230,255,.10);
+      border-color: rgba(67,183,255,.88);
+      box-shadow: var(--glowBlueStrong);
     }
+
+    .tableWrap{
+      margin:0 12px 12px;
+      overflow:auto;
+      border-radius: 16px;
+      border:1px solid rgba(67,183,255,.22);
+      background: rgba(0,0,0,.14);
+      box-shadow: var(--glowBlueStrong);
+    }
+    table{ width:100%; border-collapse:collapse; }
+    th, td{
+      padding:10px 8px;
+      border-bottom:1px solid rgba(67,183,255,.10);
+      text-align:left;
+      font-size:12px;
+      font-weight:1000;
+      color:var(--text);
+      vertical-align:top;
+      white-space:nowrap;
+    }
+    th{ color:var(--muted); }
+    .right{ text-align:right; }
 
     /* Toast */
     .toast{
@@ -385,39 +520,24 @@
       left:50%;
       transform:translateX(-50%);
       bottom:14px;
-      background: rgba(7,19,43,.92);
-      border:1px solid rgba(46,230,255,.22);
+      background: rgba(8,7,22,.92);
+      border:1px solid rgba(67,183,255,.20);
       box-shadow: 0 12px 40px rgba(0,0,0,.55);
       padding:10px 12px;
       border-radius:14px;
-      font-weight:900;
+      font-weight:1000;
       font-size:12px;
       color:var(--text);
       opacity:0;
       pointer-events:none;
       transition: opacity .2s ease, transform .2s ease;
       z-index:9999;
-      max-width:min(540px, 92vw);
+      max-width:min(720px, 92vw);
     }
-    .toast.show{
-      opacity:1;
-      transform:translateX(-50%) translateY(-4px);
-    }
+    .toast.show{ opacity:1; transform:translateX(-50%) translateY(-4px); }
 
-    /* Confetti canvas */
-    #confetti{
-      position:fixed;
-      inset:0;
-      pointer-events:none;
-      z-index:9998;
-    }
-
-    /* Subtle glow divider */
-    .glowLine{
-      height:1px;
-      background: linear-gradient(90deg, transparent, rgba(46,230,255,.35), rgba(123,92,255,.25), transparent);
-      margin:10px 0 0;
-    }
+    /* Confetti */
+    #confetti{ position:fixed; inset:0; pointer-events:none; z-index:9998; }
   </style>
 </head>
 
@@ -426,12 +546,12 @@
 
 <div class="wrap">
   <div class="topbar">
+    <!-- Mobil reset için: logoya 6 sn basılı tut -->
     <div class="brand">
-      <!-- Mobil reset için gizli uzun basma: bu logoya 6 sn basılı tut -->
-      <div class="logo" id="teacherReset" title=""></div>
+      <div class="logo" id="teacherReset"></div>
       <div class="title">
         <h1>Hüseyin Akdağ İlkokulu Fen Bilimleri 4. Tema Yarışması</h1>
-        <small>Pro+ • 10/20/30/40 soru • Skor + Süre</small>
+        <small>Pro+ • 10/20/30/40 soru • Skor • Süre</small>
       </div>
     </div>
 
@@ -439,35 +559,35 @@
       <div class="pill">
         <label>🎵 Müzik</label>
         <input id="musicVol" type="range" min="0" max="1" step="0.01" value="0.35">
-        <button id="musicToggle" class="btn secondary" type="button">Açık</button>
+        <button id="musicToggle" class="btn" type="button">Açık</button>
       </div>
       <div class="pill">
         <label>🔊 Efekt</label>
         <input id="fxVol" type="range" min="0" max="1" step="0.01" value="0.60">
-        <button id="fxToggle" class="btn secondary" type="button">Açık</button>
+        <button id="fxToggle" class="btn" type="button">Açık</button>
       </div>
-      <button id="btnRefreshLB" class="btn" type="button">Skorları Yenile</button>
     </div>
   </div>
 
   <div class="grid">
-    <!-- Game -->
-    <div class="card">
-      <div class="hdr">
-        <h2>Oyun</h2>
-        <div class="meta">
-          <span id="bMode" class="badge">Mod: -</span>
-          <span id="bScore" class="badge good">Skor: 0</span>
-          <span id="bTime" class="badge">Süre: 0 sn</span>
+    <!-- Oyun -->
+    <div class="neonFrame">
+      <div class="content">
+        <div class="hdrRow">
+          <h2>Oyun</h2>
+          <div class="badges">
+            <span id="bMode" class="badge">Mod: -</span>
+            <span id="bScore" class="badge">Skor: 0</span>
+            <span id="bTime" class="badge">Süre: 0 sn</span>
+          </div>
         </div>
-      </div>
+        <div class="divider"></div>
 
-      <div class="body">
         <div id="startPanel">
           <div class="startRow">
             <div class="field">
               <label>Öğrenci Adı</label>
-              <input id="playerName" placeholder="Örn: Elif Nur" maxlength="18" />
+              <input id="playerName" placeholder="" maxlength="18" />
             </div>
 
             <div class="field">
@@ -476,49 +596,58 @@
             </div>
           </div>
 
-          <div class="glowLine"></div>
-
-          <div class="footerRow" style="margin-top:12px;">
-            <div class="mini">
-              • Her oyunda sorular karışık gelir • Aynı oyunda tekrar etmez
-            </div>
-            <button id="btnStart" class="btn" type="button">Başlat</button>
+          <div class="startFooter">
+            <button id="btnStart" class="startBtn" type="button">Başlat</button>
           </div>
         </div>
 
         <div id="quizPanel" style="display:none;">
-          <div class="qbox">
+          <div class="qbox" id="qbox">
             <div class="qTop">
               <div class="qIdx" id="qIndex">Soru -/-</div>
               <div class="qIdx" id="qHint"></div>
             </div>
-            <div class="qText" id="qText">...</div>
 
+            <div class="qText" id="qText">...</div>
             <div class="opts" id="opts"></div>
 
-            <div class="footerRow">
-              <div class="mini" id="miniProgress">-</div>
-              <button id="btnQuit" class="btn secondary" type="button">Bitir</button>
-            </div>
+            <div class="mini" id="miniProgress">-</div>
+            <div class="feedback" id="feedback"></div>
           </div>
         </div>
+
+        <!-- Bitiş ekranı -->
+        <div id="finishPanel" class="finishPanel">
+          <h3 class="finishTitle">Oyun Bitti 🎉</h3>
+          <div class="finishGrid">
+            <div class="stat"><small>Öğrenci</small><span id="fName">-</span></div>
+            <div class="stat"><small>Mod</small><span id="fMode">-</span></div>
+            <div class="stat"><small>Skor</small><span id="fScore">-</span></div>
+            <div class="stat"><small>Süre</small><span id="fTime">-</span></div>
+          </div>
+          <div class="finishBtns">
+            <button id="btnRestart" class="btnPrimary" type="button">Yeniden Başlat</button>
+            <button id="btnHome" class="btnGhost" type="button">Ana Ekran</button>
+          </div>
+        </div>
+
       </div>
     </div>
 
-    <!-- Leaderboard -->
-    <div class="card">
-      <div class="hdr">
-        <h2>Skor Tablosu</h2>
-        <div class="meta">
-          <span class="badge">Firebase</span>
+    <!-- Skor Tablosu -->
+    <div class="neonFrame lbFrame">
+      <div class="content">
+        <div class="hdrRow">
+          <h2>Skor Tablosu</h2>
+          <div class="badges">
+            <span class="badge">Firebase</span>
+          </div>
         </div>
-      </div>
-      <div class="body">
-        <div class="rowTop">
-          <div class="tabs" id="lbTabs"></div>
-        </div>
+        <div class="divider"></div>
 
-        <div style="overflow:auto; border-radius:14px; border:1px solid rgba(46,230,255,.14);">
+        <div class="tabs" id="lbTabs"></div>
+
+        <div class="tableWrap">
           <table>
             <thead>
               <tr>
@@ -529,16 +658,13 @@
               </tr>
             </thead>
             <tbody id="lbBody">
-              <tr><td colspan="4" style="color:var(--muted);">Henüz veri yok.</td></tr>
+              <tr><td colspan="4" style="color:var(--muted);">Yükleniyor...</td></tr>
             </tbody>
           </table>
         </div>
-
-        <div class="mini" style="margin-top:10px;">
-          Not: Reset işlemi tüm cihazlarda aynı anda etki eder.
-        </div>
       </div>
     </div>
+
   </div>
 </div>
 
@@ -546,7 +672,29 @@
 
 <script type="module">
   /************************************************************
-   * 1) Firebase Config: BURAYA KENDİ firebaseConfig'İNİ YAPIŞTIR
+   * AYARLAR
+   ************************************************************/
+  const ANSWER_REVEAL_MS = 1200; // doğru/yanlış efektini görsün diye
+
+  /************************************************************
+   * ARKA PLAN (3 görsel) - her oyun başlangıcında değişir
+   ************************************************************/
+  const BG_LIST = ["bg1.jpg","bg2.jpg","bg3.jpg"]; // aynı klasörde olmalı
+  let lastBg = -1;
+
+  function pickBg(){
+    if(!BG_LIST.length) return;
+    let idx = Math.floor(Math.random()*BG_LIST.length);
+    if(BG_LIST.length > 1 && idx === lastBg) idx = (idx+1) % BG_LIST.length;
+    lastBg = idx;
+    document.documentElement.style.setProperty("--bgImg", `url('${BG_LIST[idx]}')`);
+  }
+
+  // sayfa açılınca bir tane seç
+  pickBg();
+
+  /************************************************************
+   * FIREBASE CONFIG (BURAYI DOLDUR)
    ************************************************************/
   const firebaseConfig = {
     apiKey: "PASTE_HERE",
@@ -554,12 +702,12 @@
     projectId: "PASTE_HERE",
     storageBucket: "PASTE_HERE",
     messagingSenderId: "PASTE_HERE",
-    appId: "PASTE_HERE",
-    measurementId: "PASTE_HERE" // varsa kalsın, yoksa silebilirsin
+    appId: "PASTE_HERE"
   };
 
   /************************************************************
-   * 2) Soru Bankası (SADECE yeni eklediğin 124 soru)
+   * SORU BANKASI
+   * (Senin bank dizin aynen burada. Aşağıya mevcut bank’ını olduğu gibi koydum.)
    ************************************************************/
   const BANK = [
     {q:"Aşağıdakilerden hangisi maddeyi nitelendiren özelliklerden biri değildir?", a:["Suda yüzme","Mıknatısla çekilme","Kütle","Suyu emme"], c:"C"},
@@ -689,94 +837,95 @@
   ];
 
   /************************************************************
-   * 3) UI / Sesler / Konfeti
+   * Yardımcılar + Toast
    ************************************************************/
   const $ = (id)=>document.getElementById(id);
-
   const toastEl = $("toast");
   function toast(msg){
     toastEl.textContent = msg;
     toastEl.classList.add("show");
     clearTimeout(toastEl._t);
-    toastEl._t = setTimeout(()=>toastEl.classList.remove("show"), 1600);
+    toastEl._t = setTimeout(()=>toastEl.classList.remove("show"), 2200);
   }
 
-  // Audio (dosyaları index.html ile aynı klasöre koy)
+  /************************************************************
+   * SES
+   ************************************************************/
   const music = new Audio("Madde.mp3");
-  music.loop = true;
-  music.preload = "auto";
-
+  music.loop = true; music.preload = "auto";
   const sOK = new Audio("alkış.mp3");
   const sNO = new Audio("hata.mp3");
-  [sOK,sNO].forEach(a=>{ a.preload="auto"; });
+  [sOK,sNO].forEach(a=>a.preload="auto");
 
   let musicOn = true, fxOn = true;
   let musicVol = 0.35, fxVol = 0.60;
 
   function applyAudio(){
     music.volume = musicOn ? musicVol : 0;
-    sOK.volume  = fxOn ? fxVol : 0;
-    sNO.volume  = fxOn ? fxVol : 0;
+    sOK.volume = fxOn ? fxVol : 0;
+    sNO.volume = fxOn ? fxVol : 0;
   }
   applyAudio();
 
-  $("musicVol").addEventListener("input", (e)=>{ musicVol = +e.target.value; applyAudio(); });
-  $("fxVol").addEventListener("input", (e)=>{ fxVol = +e.target.value; applyAudio(); });
+  $("musicVol").addEventListener("input",(e)=>{ musicVol=+e.target.value; applyAudio(); });
+  $("fxVol").addEventListener("input",(e)=>{ fxVol=+e.target.value; applyAudio(); });
 
-  $("musicToggle").addEventListener("click", ()=>{
-    musicOn = !musicOn;
+  $("musicToggle").addEventListener("click",()=>{
+    musicOn=!musicOn;
     $("musicToggle").textContent = musicOn ? "Açık" : "Kapalı";
     applyAudio();
   });
-  $("fxToggle").addEventListener("click", ()=>{
-    fxOn = !fxOn;
+  $("fxToggle").addEventListener("click",()=>{
+    fxOn=!fxOn;
     $("fxToggle").textContent = fxOn ? "Açık" : "Kapalı";
     applyAudio();
   });
 
-  // Autoplay policy: ilk kullanıcı etkileşiminde müziği başlat
-  let musicStarted = false;
+  let musicStarted=false;
   async function ensureMusic(){
     if(musicStarted) return;
-    musicStarted = true;
+    musicStarted=true;
     try{ await music.play(); }catch{}
   }
   ["click","touchstart","keydown"].forEach(ev=>{
     window.addEventListener(ev, ensureMusic, {once:true, passive:true});
   });
 
-  // Confetti
+  /************************************************************
+   * Confetti (mor + mavi)
+   ************************************************************/
   const confettiCanvas = $("confetti");
   const ctx = confettiCanvas.getContext("2d");
   function resizeConfetti(){
-    confettiCanvas.width = window.innerWidth * devicePixelRatio;
-    confettiCanvas.height = window.innerHeight * devicePixelRatio;
+    confettiCanvas.width = innerWidth * devicePixelRatio;
+    confettiCanvas.height = innerHeight * devicePixelRatio;
   }
-  window.addEventListener("resize", resizeConfetti);
+  addEventListener("resize", resizeConfetti);
   resizeConfetti();
 
   let confetti = [];
   function burstConfetti(){
-    const W = confettiCanvas.width, H = confettiCanvas.height;
-    const n = 180;
-    for(let i=0;i<n;i++){
+    const W=confettiCanvas.width, H=confettiCanvas.height;
+    for(let i=0;i<200;i++){
       confetti.push({
-        x: W*0.5 + (Math.random()-0.5)*W*0.12,
+        x: W*0.5 + (Math.random()-0.5)*W*0.14,
         y: H*0.18 + (Math.random()-0.5)*H*0.08,
         vx: (Math.random()-0.5)*8*devicePixelRatio,
         vy: (Math.random()*-10 - 6)*devicePixelRatio,
         g: (0.35 + Math.random()*0.25)*devicePixelRatio,
-        r: (2.2 + Math.random()*3.8)*devicePixelRatio,
+        w: (2.0 + Math.random()*4.2)*devicePixelRatio,
+        h: (1.0 + Math.random()*2.5)*devicePixelRatio,
         a: 1,
         rot: Math.random()*Math.PI,
-        vr: (Math.random()-0.5)*0.25
+        vr: (Math.random()-0.5)*0.25,
+        t: Math.random() < 0.5 ? "P" : "B"
       });
     }
   }
   function tickConfetti(){
-    const W = confettiCanvas.width, H = confettiCanvas.height;
+    const W=confettiCanvas.width, H=confettiCanvas.height;
     ctx.clearRect(0,0,W,H);
-    confetti = confetti.filter(p=>p.a>0.02 && p.y < H + 60*devicePixelRatio);
+    confetti = confetti.filter(p=>p.a>0.02 && p.y < H + 80*devicePixelRatio);
     for(const p of confetti){
       p.vy += p.g;
       p.x += p.vx;
@@ -788,7 +937,8 @@
       ctx.globalAlpha = p.a;
       ctx.translate(p.x,p.y);
       ctx.rotate(p.rot);
-      ctx.fillRect(-p.r, -p.r*0.4, p.r*2, p.r*0.8);
+      ctx.fillStyle = (p.t==="P") ? "rgba(180,92,255,1)" : "rgba(67,183,255,1)";
+      ctx.fillRect(-p.w, -p.h, p.w*2, p.h*2);
       ctx.restore();
     }
     requestAnimationFrame(tickConfetti);
@@ -796,82 +946,132 @@
   tickConfetti();
 
   /************************************************************
-   * 4) Oyun Mantığı
+   * Oyun Mantığı
    ************************************************************/
+  const MODE_LIST = [10,20,30,40];
+
   const S = {
     mode: 10,
+    lbMode: 10,
     player: "",
     score: 0,
     idx: 0,
     selected: [],
     startedAt: 0,
-    timer: null,
     timeSec: 0,
+    timer: null,
     locked: false,
-    resetVersion: 1,
-
-    lbMode: 10
+    resetVersion: 1
   };
 
-  const MODE_LIST = [10,20,30,40];
+  // Oturum boyunca tekrar etmeyen havuzlar (mode bazlı)
+  const SESSION_POOLS = new Map(); // mode -> { pool:[idx...], ptr:number }
 
-  // Profanity / argo (temel)
+  function makePool(){
+    const arr = BANK.map((_,i)=>i);
+    for(let i=arr.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [arr[i],arr[j]]=[arr[j],arr[i]];
+    }
+    return arr;
+  }
+
+  function pickQuestionsNoRepeatSession(mode){
+    if(mode > BANK.length) return [];
+    let entry = SESSION_POOLS.get(mode);
+    if(!entry || !Array.isArray(entry.pool) || typeof entry.ptr!=="number"){
+      entry = { pool: makePool(), ptr: 0 };
+      SESSION_POOLS.set(mode, entry);
+    }
+
+    // Havuzda yeterli kalmadıysa yeniden karıştır
+    if(entry.ptr + mode > entry.pool.length){
+      entry.pool = makePool();
+      entry.ptr = 0;
+    }
+
+    const slice = entry.pool.slice(entry.ptr, entry.ptr + mode);
+    entry.ptr += mode;
+    return slice;
+  }
+
   const BANNED = [
     "amk","aq","siktir","sik","yarrak","orospu","piç","pıc","p1ç","ananı","anan","babanı","baba","mk",
     "salak","mal","gerizekalı","aptal","yavşak","ibne"
   ];
   function normalizeName(str){
-    return (str || "")
-      .trim()
-      .replace(/\s+/g, " ")
-      .replace(/[^\p{L}\p{N}\s.'-]/gu, ""); // harf/sayı/boşluk + . ' -
+    return (str||"").trim().replace(/\s+/g," ").replace(/[^\p{L}\p{N}\s.'-]/gu,"");
   }
   function isBadName(name){
     const n = name.toLowerCase().replace(/\s+/g,"");
     if(n.length < 2) return true;
-    return BANNED.some(b => n.includes(b));
+    return BANNED.some(w => n.includes(w));
   }
 
-  // UI Elements
   const bMode = $("bMode");
   const bScore = $("bScore");
   const bTime = $("bTime");
 
   const startPanel = $("startPanel");
   const quizPanel = $("quizPanel");
+  const finishPanel = $("finishPanel");
+
   const qIndex = $("qIndex");
   const qText = $("qText");
   const opts = $("opts");
   const miniProgress = $("miniProgress");
+  const feedback = $("feedback");
+  const qbox = $("qbox");
 
-  // Build mode buttons
+  function setBadges(){
+    bMode.textContent = `Mod: ${S.mode}`;
+    bScore.textContent = `Skor: ${S.score}`;
+    bTime.textContent = `Süre: ${S.timeSec} sn`;
+  }
+
+  function resetUIToStart(){
+    clearInterval(S.timer);
+    S.timer=null;
+    S.locked=false;
+    feedback.textContent = "";
+    feedback.className = "feedback";
+    qbox.classList.remove("flashGood","flashBad");
+
+    quizPanel.style.display="none";
+    finishPanel.style.display="none";
+    startPanel.style.display="block";
+    setBadges();
+  }
+
+  // Mod butonları
   const modeButtons = $("modeButtons");
   function renderModeButtons(){
-    modeButtons.innerHTML = "";
+    modeButtons.innerHTML="";
     for(const m of MODE_LIST){
-      const d = document.createElement("div");
-      d.className = "modeBtn" + (m===S.mode ? " active":"");
+      const d=document.createElement("div");
+      d.className="modeBtn"+(m===S.mode?" active":"");
       d.textContent = `${m} Soru`;
-      d.addEventListener("click", ()=>{
-        S.mode = m;
+      d.addEventListener("click",()=>{
+        S.mode=m;
         [...modeButtons.children].forEach(x=>x.classList.remove("active"));
         d.classList.add("active");
+        setBadges();
       });
       modeButtons.appendChild(d);
     }
   }
   renderModeButtons();
 
-  // Leaderboard tabs
+  // Skor tablosu sekmeleri
   const lbTabs = $("lbTabs");
   function renderLBTabs(){
-    lbTabs.innerHTML = "";
+    lbTabs.innerHTML="";
     for(const m of MODE_LIST){
-      const t = document.createElement("div");
-      t.className = "tab" + (m===S.lbMode ? " active":"");
+      const t=document.createElement("div");
+      t.className="tab"+(m===S.lbMode?" active":"");
       t.textContent = `${m} Soru`;
-      t.addEventListener("click", ()=>{
-        S.lbMode = m;
+      t.addEventListener("click",()=>{
+        S.lbMode=m;
         renderLBTabs();
         renderLeaderboard();
       });
@@ -880,209 +1080,244 @@
   }
   renderLBTabs();
 
-  function setBadges(){
-    bMode.textContent = `Mod: ${S.mode}`;
-    bScore.textContent = `Skor: ${S.score}`;
-    bTime.textContent = `Süre: ${S.timeSec} sn`;
-  }
+  function showQuestion(){
+    qbox.classList.remove("flashGood","flashBad");
+    feedback.textContent = "";
+    feedback.className = "feedback";
 
-  function shuffle(arr){
-    for(let i=arr.length-1;i>0;i--){
-      const j = Math.floor(Math.random()*(i+1));
-      [arr[i],arr[j]]=[arr[j],arr[i]];
+    const cur = BANK[S.selected[S.idx]];
+    qIndex.textContent = `Soru ${S.idx+1}/${S.mode}`;
+    qText.textContent = cur.q;
+
+    opts.innerHTML="";
+    const letters=["A","B","C","D"];
+    for(let i=0;i<4;i++){
+      const el=document.createElement("div");
+      el.className="opt";
+      el.innerHTML = `<span class="k">${letters[i]})</span>${cur.a[i]}`;
+      el.addEventListener("click",()=>choose(letters[i]));
+      opts.appendChild(el);
     }
-    return arr;
+    miniProgress.textContent = `Doğru: ${S.score} • Kalan: ${S.mode-(S.idx+1)}`;
+    setBadges();
   }
 
-  function pickQuestions(mode){
-    const pool = BANK.map((_,i)=>i);
-    shuffle(pool);
-    return pool.slice(0, mode);
+  async function playFx(audio){
+    if(!fxOn) return;
+    try{
+      audio.currentTime = 0;
+      await audio.play();
+    }catch{}
+  }
+
+  async function choose(letter){
+    if(S.locked) return;
+    S.locked=true;
+
+    const cur = BANK[S.selected[S.idx]];
+    const correct = cur.c;
+
+    [...opts.children].forEach(x=>x.classList.add("disabled"));
+
+    const letters=["A","B","C","D"];
+    for(let i=0;i<4;i++){
+      const el=opts.children[i];
+      if(letters[i]===correct) el.classList.add("correct");
+      if(letters[i]===letter && letter!==correct) el.classList.add("wrong");
+    }
+
+    const isCorrect = (letter===correct);
+
+    if(isCorrect){
+      S.score++;
+      qbox.classList.add("flashGood");
+      feedback.textContent = "Doğru ✅";
+      feedback.classList.add("good");
+      burstConfetti();
+      await playFx(sOK);
+      if(navigator.vibrate) try{ navigator.vibrate(30); }catch{}
+    }else{
+      qbox.classList.add("flashBad");
+      feedback.textContent = "Yanlış ❌";
+      feedback.classList.add("bad");
+      await playFx(sNO);
+      if(navigator.vibrate) try{ navigator.vibrate([20,40,20]); }catch{}
+    }
+
+    setBadges();
+
+    setTimeout(async ()=>{
+      S.idx++;
+      S.locked=false;
+
+      if(S.idx >= S.mode){
+        await finishGameAndSave();
+      }else{
+        showQuestion();
+      }
+    }, ANSWER_REVEAL_MS);
   }
 
   function startGame(){
-    const raw = $("playerName").value;
-    const name = normalizeName(raw);
-    if(!name || name.length>18 || isBadName(name)){
-      toast("İsim uygun değil.");
-      return;
-    }
-    S.player = name;
-
-    // bank size guard
     if(S.mode > BANK.length){
       toast("Soru bankası yetersiz.");
       return;
     }
 
-    S.score = 0;
-    S.idx = 0;
-    S.selected = pickQuestions(S.mode);
-    S.locked = false;
+    const raw = $("playerName").value;
+    const name = normalizeName(raw);
 
-    S.startedAt = Date.now();
-    S.timeSec = 0;
+    if(!name || name.length>18 || isBadName(name)){
+      toast("İsim uygun değil.");
+      return;
+    }
 
+    // Her oyun başlangıcında arka plan değişsin
+    pickBg();
+
+    finishPanel.style.display="none";
     startPanel.style.display="none";
     quizPanel.style.display="block";
-    setBadges();
-    showQuestion();
 
-    // timer counts up
+    S.player=name;
+    S.score=0;
+    S.idx=0;
+
+    // ✅ Oturum boyunca tekrar etmeyen rastgele seçim
+    S.selected = pickQuestionsNoRepeatSession(S.mode);
+
+    S.startedAt=Date.now();
+    S.timeSec=0;
+    S.locked=false;
+
     clearInterval(S.timer);
     S.timer = setInterval(()=>{
       S.timeSec = Math.floor((Date.now()-S.startedAt)/1000);
       bTime.textContent = `Süre: ${S.timeSec} sn`;
     }, 250);
+
+    setBadges();
+    showQuestion();
   }
 
-  function endGame(){
+  async function finishGameAndSave(){
     clearInterval(S.timer);
-    S.timer = null;
+    S.timer=null;
+    setBadges();
+
+    $("fName").textContent = S.player;
+    $("fMode").textContent = `${S.mode} Soru`;
+    $("fScore").textContent = `${S.score}/${S.mode}`;
+    $("fTime").textContent = fmtTime(S.timeSec);
 
     quizPanel.style.display="none";
-    startPanel.style.display="block";
+    finishPanel.style.display="block";
 
-    setBadges();
-  }
-
-  function showQuestion(){
-    const cur = BANK[S.selected[S.idx]];
-    qIndex.textContent = `Soru ${S.idx+1}/${S.mode}`;
-    qText.textContent = cur.q;
-
-    opts.innerHTML = "";
-    const letters = ["A","B","C","D"];
-    for(let i=0;i<4;i++){
-      const b = document.createElement("div");
-      b.className = "opt";
-      b.innerHTML = `<span class="k">${letters[i]})</span>${cur.a[i]}`;
-      b.addEventListener("click", ()=> choose(letters[i], b));
-      opts.appendChild(b);
-    }
-
-    miniProgress.textContent = `Doğru sayısı: ${S.score} • Kalan: ${S.mode - (S.idx+1)}`;
-    setBadges();
-  }
-
-  async function choose(letter, btnEl){
-    if(S.locked) return;
-    S.locked = true;
-
-    const cur = BANK[S.selected[S.idx]];
-    const correct = cur.c;
-
-    // disable all
-    [...opts.children].forEach(x=>x.classList.add("disabled"));
-
-    // mark results
-    const letters = ["A","B","C","D"];
-    for(let i=0;i<4;i++){
-      const el = opts.children[i];
-      if(letters[i]===correct) el.classList.add("correct");
-      if(letters[i]===letter && letter!==correct) el.classList.add("wrong");
-    }
-
-    if(letter===correct){
-      S.score++;
-      setBadges();
-      if(fxOn){ try{ sOK.currentTime=0; await sOK.play(); }catch{} }
-      burstConfetti();
-    }else{
-      if(fxOn){ try{ sNO.currentTime=0; await sNO.play(); }catch{} }
-    }
-
-    // next
-    setTimeout(async ()=>{
-      S.idx++;
-      S.locked = false;
-
-      if(S.idx >= S.mode){
-        // finish
-        clearInterval(S.timer);
-        S.timer = null;
-        setBadges();
-
-        await saveScoreToFirebase();
-
-        toast("Bitti! Skor kaydedildi ✅");
-        endGame();
-        renderLeaderboard();
-      }else{
-        showQuestion();
-      }
-    }, 650);
+    await saveScoreToFirebase();
+    renderLeaderboard();
   }
 
   $("btnStart").addEventListener("click", startGame);
-  $("btnQuit").addEventListener("click", async ()=>{
-    const ok = confirm("Oyunu bitirmek istiyor musun?");
-    if(!ok) return;
+
+  $("btnRestart").addEventListener("click", ()=>{
+    // aynı isimle tekrar başlat
+    finishPanel.style.display="none";
+    startPanel.style.display="none";
+    quizPanel.style.display="block";
+
+    // Her restart’ta da arka plan değişsin
+    pickBg();
+
+    S.score=0;
+    S.idx=0;
+    S.selected = pickQuestionsNoRepeatSession(S.mode);
+    S.startedAt=Date.now();
+    S.timeSec=0;
+    S.locked=false;
 
     clearInterval(S.timer);
-    S.timer = null;
+    S.timer = setInterval(()=>{
+      S.timeSec = Math.floor((Date.now()-S.startedAt)/1000);
+      bTime.textContent = `Süre: ${S.timeSec} sn`;
+    }, 250);
 
-    await saveScoreToFirebase(); // erken bitirme: yine kaydetsin
-    toast("Kaydedildi ✅");
-    endGame();
-    renderLeaderboard();
+    setBadges();
+    showQuestion();
   });
 
-  $("btnRefreshLB").addEventListener("click", renderLeaderboard);
+  $("btnHome").addEventListener("click", ()=>{
+    resetUIToStart();
+  });
 
   /************************************************************
-   * 5) Firebase (Firebase-only skor) + resetVersion
+   * FIREBASE (Firestore)
    ************************************************************/
   let app=null, db=null, cloudReady=false;
-  let firestore = null;
+  let fs=null;
 
-  const SETTINGS_DOC = ["settings","global"];
+  const SETTINGS_DOC = ["settings","global"]; // resetVersion burada
 
   async function initFirebase(){
     try{
       const { initializeApp } = await import("https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js");
       const {
         getFirestore, collection, addDoc, query, where, orderBy, limit, getDocs,
-        serverTimestamp, doc, getDoc, updateDoc, onSnapshot
+        serverTimestamp, doc, getDoc, setDoc, updateDoc, onSnapshot
       } = await import("https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js");
 
-      firestore = { getFirestore, collection, addDoc, query, where, orderBy, limit, getDocs, serverTimestamp, doc, getDoc, updateDoc, onSnapshot };
+      fs = { getFirestore, collection, addDoc, query, where, orderBy, limit, getDocs, serverTimestamp, doc, getDoc, setDoc, updateDoc, onSnapshot };
 
       app = initializeApp(firebaseConfig);
       db = getFirestore(app);
       cloudReady = true;
 
+      await ensureSettingsDoc();
       await syncResetVersion();
       await renderLeaderboard();
 
-      // Shift+Z (PC): cloud reset
-      window.addEventListener("keydown", async (e)=>{
+      // PC: Shift + Z reset
+      addEventListener("keydown", async (e)=>{
         if(e.shiftKey && e.key.toLowerCase()==="z"){
           const ok = confirm("Skor tablosu sıfırlansın mı?");
           if(!ok) return;
           try{
             await cloudResetAll();
             toast("Sıfırlandı ✅");
-          }catch{
-            toast("Sıfırlama başarısız.");
+          }catch(err){
+            console.warn(err);
+            toast("Sıfırlama: " + (err?.code || "hata"));
           }
         }
       });
 
-      // Mobil gizli reset: logoya 6 sn basılı tut
+      // Mobil: logoya 6sn basılı tut
       enableMobileResetGesture();
 
     }catch(err){
-      // Firebase yoksa oyun oynanır ama skor kaydetmez
       console.warn(err);
-      toast("Firebase hazır değil.");
+      $("lbBody").innerHTML = `<tr><td colspan="4" style="color:var(--muted);">Firebase bağlantısı yok.</td></tr>`;
+      toast("Firebase: bağlantı yok");
+    }
+  }
+
+  async function ensureSettingsDoc(){
+    if(!cloudReady || !db) return;
+    const { doc, getDoc, setDoc, serverTimestamp } = fs;
+    const ref = doc(db, ...SETTINGS_DOC);
+    try{
+      const snap = await getDoc(ref);
+      if(!snap.exists()){
+        await setDoc(ref, { resetVersion: 1, createdAt: serverTimestamp() }, { merge:true });
+      }
+    }catch(err){
+      console.warn(err);
+      toast("settings/global: " + (err?.code || "hata"));
     }
   }
 
   async function syncResetVersion(){
     if(!cloudReady || !db) return;
-
-    const { doc, getDoc, onSnapshot } = firestore;
+    const { doc, getDoc, onSnapshot } = fs;
     const ref = doc(db, ...SETTINGS_DOC);
 
     try{
@@ -1090,14 +1325,8 @@
       if(snap.exists()){
         const v = snap.data().resetVersion;
         if(typeof v === "number") S.resetVersion = v;
-      }else{
-        // settings/global yoksa: admin console'dan oluşturulmalı
-        // (kurallar create kapalı olabilir)
-        toast("Ayar dokümanı yok.");
       }
-    }catch{
-      // ignore
-    }
+    }catch{}
 
     try{
       onSnapshot(ref, (snap)=>{
@@ -1113,21 +1342,18 @@
   }
 
   async function cloudResetAll(){
-    if(!cloudReady || !db) throw new Error("cloud not ready");
-    const { doc, updateDoc, serverTimestamp } = firestore;
+    const { doc, setDoc, serverTimestamp } = fs;
     const ref = doc(db, ...SETTINGS_DOC);
     const next = (S.resetVersion || 1) + 1;
-    await updateDoc(ref, { resetVersion: next, updatedAt: serverTimestamp() });
-    // onSnapshot herkes için tabloyu günceller
+    // ✅ doc yoksa bile çalışsın
+    await setDoc(ref, { resetVersion: next, updatedAt: serverTimestamp() }, { merge:true });
   }
 
   async function saveScoreToFirebase(){
-    if(!cloudReady || !db) return;
+    if(!cloudReady || !db) { toast("Kayıt yok: Firebase"); return; }
+    if(!navigator.onLine) { toast("İnternet yok: kayıt yapılmadı"); return; }
 
-    // İnternet yoksa sessizce geç
-    if(!navigator.onLine) return;
-
-    const { collection, addDoc, serverTimestamp } = firestore;
+    const { collection, addDoc, serverTimestamp } = fs;
 
     const payload = {
       name: S.player,
@@ -1140,9 +1366,10 @@
 
     try{
       await addDoc(collection(db, "leaderboard"), payload);
+      toast("Kaydedildi ✅");
     }catch(err){
       console.warn(err);
-      toast("Kayıt başarısız.");
+      toast("Kayıt hatası: " + (err?.code || "hata"));
     }
   }
 
@@ -1154,18 +1381,24 @@
     return `${m}dk ${s}s`;
   }
 
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
   async function renderLeaderboard(){
     const body = $("lbBody");
     body.innerHTML = `<tr><td colspan="4" style="color:var(--muted);">Yükleniyor...</td></tr>`;
 
     if(!cloudReady || !db){
-      body.innerHTML = `<tr><td colspan="4" style="color:var(--muted);">Firebase bağlı değil.</td></tr>`;
+      body.innerHTML = `<tr><td colspan="4" style="color:var(--muted);">Firebase bağlantısı yok.</td></tr>`;
       return;
     }
 
-    const { collection, query, where, orderBy, limit, getDocs } = firestore;
+    const { collection, query, where, orderBy, limit, getDocs } = fs;
 
     try{
+      // Not: Bu sorgu için Firestore index isteyebilir.
+      // Eğer index isterse konsolda link çıkar: "Create index" ile 1 kere oluşturulur.
       const q = query(
         collection(db, "leaderboard"),
         where("mode","==", S.lbMode),
@@ -1189,20 +1422,19 @@
         const tr = document.createElement("tr");
         tr.innerHTML = `
           <td>${i}</td>
-          <td>${escapeHtml(String(d.name ?? ""))}</td>
+          <td>${escapeHtml(d.name ?? "")}</td>
           <td class="right">${Number(d.score ?? 0)}</td>
           <td class="right">${fmtTime(Number(d.timeSec ?? 0))}</td>
         `;
         body.appendChild(tr);
       });
+
     }catch(err){
       console.warn(err);
-      body.innerHTML = `<tr><td colspan="4" style="color:var(--muted);">Okuma hatası.</td></tr>`;
+      const code = err?.code || "hata";
+      body.innerHTML = `<tr><td colspan="4" style="color:var(--muted);">Okuma hatası: ${escapeHtml(code)}</td></tr>`;
+      toast("Skor okuma: " + code);
     }
-  }
-
-  function escapeHtml(s){
-    return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   }
 
   function enableMobileResetGesture(){
@@ -1217,25 +1449,22 @@
         try{
           await cloudResetAll();
           toast("Sıfırlandı ✅");
-        }catch{
-          toast("Sıfırlama başarısız.");
+        }catch(err){
+          console.warn(err);
+          toast("Sıfırlama: " + (err?.code || "hata"));
         }
       }, 6000);
     };
-    const cancel = ()=>{
-      if(t) clearTimeout(t);
-      t=null;
-    };
+    const cancel = ()=>{ if(t) clearTimeout(t); t=null; };
 
     el.addEventListener("touchstart", start, {passive:true});
     el.addEventListener("touchend", cancel);
     el.addEventListener("touchcancel", cancel);
   }
 
-  // Init
+  // Başlat
   setBadges();
   initFirebase();
-
 </script>
 </body>
 </html>
