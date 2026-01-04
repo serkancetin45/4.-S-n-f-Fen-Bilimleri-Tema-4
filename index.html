@@ -696,17 +696,15 @@
   /************************************************************
    * FIREBASE CONFIG (BURAYI DOLDUR)
    ************************************************************/
-  sabit firebaseConfig = { 
-  apiKey : "AIzaSyDlrVdLo7ZMqhLJb-xoImcFKuLC65v_20Y" , 
-  authDomain : "dort-islem-oyunu-608cb.firebaseapp.com" , 
-  projectId : "dort-islem-oyunu-608cb" , 
-  storageBucket : "dort-islem-oyunu-608cb.firebasestorage.app" , 
-  messagingSenderId : "133255919254" , 
-  uygulama kimliği : "1:133255919254:web:35bb6162563397910a34b7" , 
-  ölçümId : "G-7Z8N55Y19M" 
-};
-const app = initializeApp ( firebaseConfig );
-const analytics = getAnalytics ( app );
+  const firebaseConfig = {
+    apiKey: "AIzaSyDlrVdLo7ZMqhLJb-xoImcFKuLC65v_20Y",
+    authDomain: "dort-islem-oyunu-608cb.firebaseapp.com",
+    projectId: "dort-islem-oyunu-608cb",
+    storageBucket: "dort-islem-oyunu-608cb.firebasestorage.app",
+    messagingSenderId: "133255919254",
+    appId: "1:133255919254:web:19b73a36e9b76d4d0a34b7",
+    measurementId: "G-J0693K6LVX"
+  };
   /************************************************************
    * SORU BANKASI
    * (Senin bank dizin aynen burada. Aşağıya mevcut bank’ını olduğu gibi koydum.)
@@ -1470,5 +1468,3 @@ const analytics = getAnalytics ( app );
 </script>
 </body>
 </html>
-
-
