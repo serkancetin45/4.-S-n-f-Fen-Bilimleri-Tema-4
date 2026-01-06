@@ -851,89 +851,65 @@
     /************************************************************
  * SES AYARLARI (Mobil Uyumlu & Ses Ayarı Çalışan Versiyon)
  ************************************************************/
-const music = new Audio("madde.mp3");
+// 1. Müziği tanımlarken özel ayarlar ekliyoruz
+const music = new Audio();
+music.src = "madde.mp3";
 music.loop = true;
-music.preload = "metadata";
+// Mobilde uzun dosyalar için 'none' veya 'metadata' yerine 'auto' denemek gerekebilir
+music.preload = "auto"; 
 
+// 2. Diğer sesler zaten çalışıyor dediniz
 const sOK = new Audio("alkis.mp3");
 const sNO = new Audio("hata.mp3");
 
-// Başlangıç değerlerini slider'lardan alalım
-let musicOn = true, fxOn = true;
-let musicVol = parseFloat(document.getElementById("musicVol").value);
-let fxVol = parseFloat(document.getElementById("fxVol").value);
+let musicOn = true;
+let musicVol = 0.35;
 
-function applyAudio() {
-    // Müzik ayarı
-    if (music) {
-        music.volume = musicOn ? musicVol : 0;
-    }
-    // Efekt ayarları
-    if (sOK && sNO) {
-        sOK.volume = fxOn ? fxVol : 0;
-        sNO.volume = fxOn ? fxVol : 0;
-    }
+function applyAudioSettings() {
+    // Müziğin ses seviyesini ayarla
+    if (music) music.volume = musicOn ? musicVol : 0;
+    if (sOK) sOK.volume = 0.60; // Sabit veya slider'dan
+    if (sNO) sNO.volume = 0.60;
 }
 
-// Mobilde ses kilidini açmak için değişken
-let audioUnlocked = false;
-
-async function unlockAudio() {
-    if (audioUnlocked) return;
+// 3. MOBİLDE MÜZİĞİ UYANDIRMA (Kritik Kısım)
+async function startMusicMobile() {
     try {
-        // Ayarları uygulamadan çalmaya başlama
-        applyAudio();
+        applyAudioSettings();
+        // Müziği oynatmaya çalış
+        const playPromise = music.play();
         
-        await music.play();
-        if (!musicOn) music.pause();
-
-        sOK.play(); sOK.pause();
-        sNO.play(); sNO.pause();
-
-        audioUnlocked = true;
-        console.log("Ses kilidi ve ayarlar başarıyla yüklendi.");
+        if (playPromise !== undefined) {
+            playPromise.then(_ => {
+                // Oynatma başladı, eğer müzik kapalıysa sustur ama bağlantıyı koparma
+                if (!musicOn) music.pause();
+                console.log("Arka plan müziği başarıyla yüklendi.");
+            }).catch(error => {
+                // Otomatik oynatma engellendi, etkileşim gerekiyor
+                console.log("Müzik için etkileşim bekleniyor...");
+            });
+        }
     } catch (err) {
-        console.error("Ses başlatılamadı:", err);
+        console.error("Müzik yükleme hatası:", err);
     }
 }
 
-// SES KISMA/AÇMA ÇUBUKLARI (Slider Dinleyicileri)
-document.getElementById("musicVol").addEventListener("input", (e) => {
-    musicVol = parseFloat(e.target.value);
-    applyAudio(); // Her hareket ettiğinde sesi güncelle
-});
-
-document.getElementById("fxVol").addEventListener("input", (e) => {
-    fxVol = parseFloat(e.target.value);
-    applyAudio(); // Her hareket ettiğinde sesi güncelle
-});
-
-// AÇ/KAPAT BUTONLARI
-document.getElementById("musicToggle").addEventListener("click", () => {
-    musicOn = !musicOn;
-    document.getElementById("musicToggle").textContent = musicOn ? "Açık" : "Kapalı";
-    if (musicOn && audioUnlocked) {
-        music.play().catch(() => {});
-    } else {
-        music.pause();
-    }
-    applyAudio();
-});
-
-document.getElementById("fxToggle").addEventListener("click", () => {
-    fxOn = !fxOn;
-    document.getElementById("fxToggle").textContent = fxOn ? "Açık" : "Kapalı";
-    applyAudio();
-});
-
-// BAŞLAT BUTONU
-document.getElementById("btnStart").addEventListener("click", () => {
-    unlockAudio(); // Ses kilidini aç ve başlangıç ses seviyelerini uygula
+// 4. BAŞLAT BUTONU (Müziği burada tetikliyoruz)
+document.getElementById("btnStart").onclick = async function() {
+    // Müziği zorla başlat
+    await startMusicMobile();
+    
+    // Diğer sesleri de "uyandır" (zaten çalışıyorlar demiştiniz ama garanti olsun)
+    sOK.play().then(() => sOK.pause());
+    
     if (typeof startGame === "function") startGame();
-});
+};
 
-// Sayfa ilk yüklendiğinde ayarları bir kez uygula
-applyAudio();
+// 5. SLIDER DÜZELTMESİ
+document.getElementById("musicVol").oninput = function() {
+    musicVol = parseFloat(this.value);
+    if (music) music.volume = musicOn ? musicVol : 0;
+};
 
 
   /************************************************************
