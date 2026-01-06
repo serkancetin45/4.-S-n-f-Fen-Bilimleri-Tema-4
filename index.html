@@ -54,6 +54,8 @@
 
       min-height:100vh;
       overflow-x:hidden;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-touch-callout: none;
     }
 
     /* Body neon ışık parıltıları */
@@ -189,9 +191,22 @@
       border:1px solid rgba(180,92,255,.40);
       box-shadow: var(--glowPurple);
       transition: transform .06s ease, filter .2s ease;
+      user-select:none;
+      touch-action: manipulation;
+      min-height: 36px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
     .btn:hover{ filter:brightness(1.10); }
     .btn:active{ transform: translateY(1px); }
+
+    /* Mobil için özel ses butonu */
+    #musicStartBtn {
+      background: rgba(180,92,255,.25);
+      border-color: rgba(180,92,255,.60);
+      box-shadow: 0 0 12px rgba(180,92,255,.32);
+    }
 
     /* ===== Layout ===== */
     .grid{
@@ -203,6 +218,7 @@
     @media (max-width: 980px){
       .grid{ grid-template-columns: 1fr; }
       input[type="range"]{ width:170px; }
+      .btn { padding: 10px 14px; }
     }
 
     .hdrRow{
@@ -264,6 +280,7 @@
       font-weight:1000;
       letter-spacing:.2px;
       box-shadow: 0 0 0 1px rgba(180,92,255,.08) inset;
+      font-size: 16px; /* iOS zoom önlemi */
     }
 
     .modes{ display:flex; gap:10px; flex-wrap:wrap; }
@@ -280,6 +297,11 @@
       box-shadow: var(--glowBlue);
       transition: transform .06s ease, filter .2s ease, border-color .2s ease, box-shadow .2s ease;
       user-select:none;
+      touch-action: manipulation;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .modeBtn:hover{ filter:brightness(1.08); }
     .modeBtn:active{ transform: translateY(1px); }
@@ -305,6 +327,8 @@
       border:1px solid rgba(180,92,255,.72);
       box-shadow: 0 0 0 1px rgba(180,92,255,.20) inset, var(--glowPurple);
       transition: transform .06s ease, filter .2s ease;
+      touch-action: manipulation;
+      min-height: 48px;
     }
     .startBtn:hover{ filter:brightness(1.10); }
     .startBtn:active{ transform: translateY(1px); }
@@ -366,6 +390,12 @@
       user-select:none;
       color: var(--text);
       box-shadow: 0 0 0 1px rgba(180,92,255,.06) inset;
+      touch-action: manipulation;
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
     }
     .opt:hover{
       filter:brightness(1.06);
@@ -391,6 +421,13 @@
       background: rgba(239,68,68,.10);
     }
     .opt.disabled{ pointer-events:none; opacity:.93; }
+
+    /* Mobil için aktif opt stili */
+    .opt.active {
+      border-color: rgba(180,92,255,.72);
+      box-shadow: 0 0 0 2px rgba(180,92,255,.30) inset, var(--glowPurple);
+      transform: scale(0.98);
+    }
 
     .mini{
       margin-top:10px;
@@ -460,6 +497,7 @@
       background: rgba(0,0,0,.22);
       border:1px solid rgba(67,183,255,.56);
       box-shadow: var(--glowBlueStrong);
+      touch-action: manipulation;
     }
     .btnGhost{
       border:none; cursor:pointer;
@@ -470,6 +508,7 @@
       background: rgba(0,0,0,.16);
       border:1px solid rgba(180,92,255,.40);
       box-shadow: var(--glowPurple);
+      touch-action: manipulation;
     }
     .btnPrimary:active,.btnGhost:active{ transform: translateY(1px); }
 
@@ -486,6 +525,7 @@
       font-size:12px;
       user-select:none;
       box-shadow: var(--glowBlue);
+      touch-action: manipulation;
     }
     .tab.active{
       border-color: rgba(67,183,255,.88);
@@ -533,11 +573,29 @@
       transition: opacity .2s ease, transform .2s ease;
       z-index:9999;
       max-width:min(720px, 92vw);
+      backdrop-filter: blur(10px);
     }
     .toast.show{ opacity:1; transform:translateX(-50%) translateY(-4px); }
 
     /* Confetti */
     #confetti{ position:fixed; inset:0; pointer-events:none; z-index:9998; }
+
+    /* Mobil uyarı mesajı */
+    .audioAlert {
+      display: none;
+      background: rgba(180,92,255,.15);
+      border: 1px solid rgba(180,92,255,.3);
+      border-radius: 12px;
+      padding: 8px 12px;
+      margin: 0 12px 12px;
+      font-size: 12px;
+      color: var(--muted);
+      text-align: center;
+    }
+    
+    @media (max-width: 768px) {
+      .audioAlert { display: block; }
+    }
   </style>
 </head>
 
@@ -560,6 +618,7 @@
         <label>🎵 Müzik</label>
         <input id="musicVol" type="range" min="0" max="1" step="0.01" value="0.35">
         <button id="musicToggle" class="btn" type="button">Açık</button>
+        <button id="musicStartBtn" class="btn" type="button">▶️ Başlat</button>
       </div>
       <div class="pill">
         <label>🔊 Efekt</label>
@@ -567,6 +626,11 @@
         <button id="fxToggle" class="btn" type="button">Açık</button>
       </div>
     </div>
+  </div>
+
+  <!-- Mobil ses uyarısı -->
+  <div class="audioAlert">
+    📱 Mobil cihazlarda ses çalabilmesi için "▶️ Başlat" butonuna dokunmanız gerekebilir.
   </div>
 
   <div class="grid">
@@ -694,7 +758,7 @@
   pickBg();
 
   /************************************************************
-   * FIREBASE CONFIG (BURAYI DOLDUR)
+   * FIREBASE CONFIG
    ************************************************************/
   const firebaseConfig = {
     apiKey: "AIzaSyDlrVdLo7ZMqhLJb-xoImcFKuLC65v_20Y",
@@ -705,9 +769,9 @@
     appId: "1:133255919254:web:19b73a36e9b76d4d0a34b7",
     measurementId: "G-J0693K6LVX"
   };
+
   /************************************************************
    * SORU BANKASI
-   * (Senin bank dizin aynen burada. Aşağıya mevcut bank’ını olduğu gibi koydum.)
    ************************************************************/
   const BANK = [
     {q:"Aşağıdakilerden hangisi maddeyi nitelendiren özelliklerden biri değildir?", a:["Suda yüzme","Mıknatısla çekilme","Kütle","Suyu emme"], c:"C"},
@@ -718,10 +782,10 @@
     {q:"Değişmeyen madde miktarına ne denir?", a:["Hacim","Kütle","Ağırlık","Brüt kütle"], c:"B"},
     {q:"Aşağıdaki ölçü birimlerinden hangisi kütle için kullanılmaz?", a:["Kilogram","Gram","Litre","Miligram"], c:"C"},
     {q:"Sıvı bir maddenin net kütlesini bulmak için aşağıdaki formülden hangisi kullanılır?", a:["Brüt kütle + Dara","Brüt kütle – Dara","Net kütle – Dara","Net kütle + Brüt kütle"], c:"B"},
-    {q:"Bir kabın boşken kütlesi 150 g, içi suyla doluyken kütlesi 500 g’dır. Suyun net kütlesi kaç gramdır?", a:["350","500","650","150"], c:"A"},
+    {q:"Bir kabın boşken kütlesi 150 g, içi suyla doluyken kütlesi 500 g'dır. Suyun net kütlesi kaç gramdır?", a:["350","500","650","150"], c:"A"},
     {q:"Sıvıların hacmini ölçmek için aşağıdakilerden hangisi kullanılmaz?", a:["Dereceli silindir","Terazi","Ölçülü kap","Beher"], c:"B"},
     {q:"1 litre kaç mililitredir?", a:["10","100","1000","10000"], c:"C"},
-    {q:"Dereceli bir kapta 300 ml su vardır. İçine bir taş atıldığında su seviyesi 450 ml’ye çıkıyor. Taşın hacmi kaç ml’dir?", a:["150","300","450","750"], c:"A"},
+    {q:"Dereceli bir kapta 300 ml su vardır. İçine bir taş atıldığında su seviyesi 450 ml'ye çıkıyor. Taşın hacmi kaç ml'dir?", a:["150","300","450","750"], c:"A"},
     {q:"Aşağıdakilerden hangisi madde değildir?", a:["Hava","Işık","Su","Taş"], c:"B"},
     {q:"Maddeler doğada kaç halde bulunur?", a:["2","3","4","5"], c:"B"},
     {q:"Aşağıdakilerden hangisi katı maddelerin özelliği değildir?", a:["Belirli bir şekli vardır.","Akışkandır.","Sıkıştırılamaz.","Dış etki olmadan şekli değişmez."], c:"B"},
@@ -820,8 +884,8 @@
     {q:"Çivinin suda batmasının nedeni nedir?", a:["Suyu emmesi","Mıknatısla çekilmesi","Yoğunluğunun sudan fazla olması","Hacminin küçük olması"], c:"C"},
     {q:"Kütle ile ilgili aşağıdakilerden hangisi doğrudur?", a:["Değişmeyen madde miktarıdır.","Boşlukta kapladığı yerdir.","Duyu organlarıyla algılanır.","Sadece katılarda vardır."], c:"A"},
     {q:"Hacim ile ilgili aşağıdakilerden hangisi doğrudur?", a:["Değişmeyen madde miktarıdır.","Boşlukta kapladığı yerdir.","Terazi ile ölçülür.","Sadece sıvılarda vardır."], c:"B"},
-    {q:"Bir cismin kütlesi Dünya’da ve Ay’da ölçüldüğünde nasıl değişir?", a:["Dünya’da daha fazladır.","Ay’da daha fazladır.","Aynıdır.","Ölçülemez."], c:"C"},
-    {q:"Bir cismin ağırlığı Dünya’da ve Ay’da ölçüldüğünde nasıl değişir?", a:["Dünya’da daha fazladır.","Ay’da daha fazladır.","Aynıdır.","Ölçülemez."], c:"A"},
+    {q:"Bir cismin kütlesi Dünya'da ve Ay'da ölçüldüğünde nasıl değişir?", a:["Dünya'da daha fazladır.","Ay'da daha fazladır.","Aynıdır.","Ölçülemez."], c:"C"},
+    {q:"Bir cismin ağırlığı Dünya'da ve Ay'da ölçüldüğünde nasıl değişir?", a:["Dünya'da daha fazladır.","Ay'da daha fazladır.","Aynıdır.","Ölçülemez."], c:"A"},
     {q:"Aşağıdakilerden hangisi sıvıların özelliği değildir?", a:["Akışkandır.","Belirli bir şekli yoktur.","Sıkıştırılamaz.","Tanecikleri arasındaki boşluk fazladır."], c:"D"},
     {q:"Gazların özelliklerinden biri değildir?", a:["Bulundukları kabın şeklini alırlar.","Sıkıştırılabilirler.","Belirli bir hacimleri yoktur.","Akışkan değillerdir."], c:"D"},
     {q:"Aşağıdakilerden hangisi katı, sıvı ve gaz hallerinde bulunabilir?", a:["Demir","Su","Tahta","Cam"], c:"B"},
@@ -849,16 +913,24 @@
   }
 
   /************************************************************
-   * SES
+   * SES SİSTEMİ - MOBİL UYUMLU
    ************************************************************/
   const music = new Audio("madde.mp3");
-  music.loop = true; music.preload = "auto";
+  music.loop = true; 
+  music.preload = "auto";
+  music.load();
+  
   const sOK = new Audio("alkıs.mp3");
   const sNO = new Audio("hata.mp3");
-  [sOK,sNO].forEach(a=>a.preload="auto");
+  
+  [sOK, sNO].forEach(a => {
+    a.preload = "auto";
+    a.load();
+  });
 
   let musicOn = true, fxOn = true;
   let musicVol = 0.35, fxVol = 0.60;
+  let musicStarted = false;
 
   function applyAudio(){
     music.volume = musicOn ? musicVol : 0;
@@ -867,29 +939,94 @@
   }
   applyAudio();
 
-  $("musicVol").addEventListener("input",(e)=>{ musicVol=+e.target.value; applyAudio(); });
-  $("fxVol").addEventListener("input",(e)=>{ fxVol=+e.target.value; applyAudio(); });
+  // Ses kontrolleri
+  $("musicVol").addEventListener("input",(e)=>{ 
+    musicVol = +e.target.value; 
+    applyAudio(); 
+  });
+  $("fxVol").addEventListener("input",(e)=>{ 
+    fxVol = +e.target.value; 
+    applyAudio(); 
+  });
 
   $("musicToggle").addEventListener("click",()=>{
-    musicOn=!musicOn;
+    musicOn = !musicOn;
     $("musicToggle").textContent = musicOn ? "Açık" : "Kapalı";
     applyAudio();
   });
   $("fxToggle").addEventListener("click",()=>{
-    fxOn=!fxOn;
+    fxOn = !fxOn;
     $("fxToggle").textContent = fxOn ? "Açık" : "Kapalı";
     applyAudio();
   });
 
-  let musicStarted=false;
-  async function ensureMusic(){
-    if(musicStarted) return;
-    musicStarted=true;
-    try{ await music.play(); }catch{}
-  }
-  ["click","touchstart","keydown"].forEach(ev=>{
-    window.addEventListener(ev, ensureMusic, {once:true, passive:true});
+  // Mobil için özel ses başlatma butonu
+  $("musicStartBtn").addEventListener("click", async () => {
+    await startMusic();
   });
+
+  async function startMusic() {
+    if (musicStarted) return;
+    
+    try {
+      // iOS için gerekli: user gesture sonrası play
+      await music.play();
+      musicStarted = true;
+      $("musicStartBtn").textContent = "✅ Başlatıldı";
+      $("musicStartBtn").style.opacity = "0.7";
+      toast("Müzik başlatıldı");
+      
+      // Otomatik olarak müzik açık moduna geç
+      musicOn = true;
+      $("musicToggle").textContent = "Açık";
+      applyAudio();
+      
+      return true;
+    } catch (err) {
+      console.log("Müzik başlatma hatası:", err);
+      toast("Müzik başlatılamadı. Ses açık mı?");
+      return false;
+    }
+  }
+
+  async function playFx(audio){
+    if(!fxOn) return;
+    
+    // Mobilde ses başlatılmadıysa önce başlat
+    if (!musicStarted) {
+      const started = await startMusic();
+      if (!started) return;
+    }
+    
+    try{
+      audio.currentTime = 0;
+      await audio.play();
+    }catch(err){
+      console.log("Efekt sesi hatası:", err);
+    }
+  }
+
+  // Oyun başlatıldığında müziği de başlat
+  $("btnStart").addEventListener("click", async () => {
+    await startMusic();
+    startGame();
+  });
+
+  // Sayfa yüklendiğinde touch/click event'leri dinle
+  function initAudioOnUserInteraction() {
+    const initAudio = async () => {
+      if (!musicStarted) {
+        await startMusic();
+      }
+    };
+    
+    ["click", "touchstart", "keydown"].forEach(ev => {
+      window.addEventListener(ev, initAudio, { once: true, passive: true });
+    });
+  }
+  
+  // Sayfa yüklendiğinde ses başlatma hazırlığı
+  window.addEventListener("DOMContentLoaded", initAudioOnUserInteraction);
 
   /************************************************************
    * Confetti (mor + mavi)
@@ -1080,6 +1217,9 @@
   }
   renderLBTabs();
 
+  /************************************************************
+   * MOBİL TIKLAMA SORUNU ÇÖZÜMÜ
+   ************************************************************/
   function showQuestion(){
     qbox.classList.remove("flashGood","flashBad");
     feedback.textContent = "";
@@ -1091,25 +1231,42 @@
 
     opts.innerHTML="";
     const letters=["A","B","C","D"];
+    
     for(let i=0;i<4;i++){
       const el=document.createElement("div");
       el.className="opt";
       el.innerHTML = `<span class="k">${letters[i]})</span>${cur.a[i]}`;
-      el.addEventListener("click",()=>choose(letters[i]));
+      
+      // TEK event listener - click ve touchstart birleştirildi
+      const handleSelection = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        if(S.locked) return;
+        
+        // Aktif stil göster
+        el.classList.add("active");
+        
+        // Hemen seçimi işle
+        setTimeout(() => {
+          choose(letters[i]);
+        }, 50); // Kısa gecikme için daha iyi kullanıcı deneyimi
+      };
+      
+      // Hem click hem touch için aynı handler
+      el.addEventListener("click", handleSelection);
+      el.addEventListener("touchstart", handleSelection, { passive: false });
+      
       opts.appendChild(el);
     }
+    
     miniProgress.textContent = `Doğru: ${S.score} • Kalan: ${S.mode-(S.idx+1)}`;
     setBadges();
   }
 
-  async function playFx(audio){
-    if(!fxOn) return;
-    try{
-      audio.currentTime = 0;
-      await audio.play();
-    }catch{}
-  }
-
+  /************************************************************
+   * SEÇİM FONKSİYONU GÜNCELLENDİ
+   ************************************************************/
   async function choose(letter){
     if(S.locked) return;
     S.locked=true;
@@ -1117,7 +1274,11 @@
     const cur = BANK[S.selected[S.idx]];
     const correct = cur.c;
 
-    [...opts.children].forEach(x=>x.classList.add("disabled"));
+    // Tüm seçenekleri devre dışı bırak
+    [...opts.children].forEach(x=>{
+      x.classList.add("disabled");
+      x.classList.remove("active"); // Aktif stil kaldır
+    });
 
     const letters=["A","B","C","D"];
     for(let i=0;i<4;i++){
@@ -1158,6 +1319,9 @@
     }, ANSWER_REVEAL_MS);
   }
 
+  /************************************************************
+   * OYUN BAŞLATMA
+   ************************************************************/
   function startGame(){
     if(S.mode > BANK.length){
       toast("Soru bankası yetersiz.");
@@ -1225,7 +1389,7 @@
     startPanel.style.display="none";
     quizPanel.style.display="block";
 
-    // Her restart’ta da arka plan değişsin
+    // Her restart'ta da arka plan değişsin
     pickBg();
 
     S.score=0;
@@ -1460,11 +1624,34 @@
     el.addEventListener("touchstart", start, {passive:true});
     el.addEventListener("touchend", cancel);
     el.addEventListener("touchcancel", cancel);
+    
+    // PC için de click
+    el.addEventListener("mousedown", start);
+    el.addEventListener("mouseup", cancel);
+    el.addEventListener("mouseleave", cancel);
   }
 
+  /************************************************************
+   * SAYFA YÜKLENDİĞİNDE
+   ************************************************************/
   // Başlat
   setBadges();
   initFirebase();
+  
+  // Sayfa yüklendiğinde audio kontrolleri hazırla
+  document.addEventListener("DOMContentLoaded", function() {
+    // Mobil cihaz kontrolü
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    if (isMobile) {
+      console.log("Mobil cihaz tespit edildi - Ses için '▶️ Başlat' butonunu kullanın");
+    }
+    
+    // Input alanına otomatik odaklanma (mobil klavye için)
+    const playerNameInput = $("playerName");
+    if (playerNameInput) {
+      playerNameInput.focus();
+    }
+  });
 </script>
 </body>
 </html>
