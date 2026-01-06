@@ -848,69 +848,48 @@
     toastEl._t = setTimeout(()=>toastEl.classList.remove("show"), 2200);
   }
 
-    /************************************************************
- * SES AYARLARI (Mobil Uyumlu & Ses Ayarı Çalışan Versiyon)
- ************************************************************/
-// 1. Müziği tanımlarken özel ayarlar ekliyoruz
-const music = new Audio();
-music.src = "madde.mp3";
-music.loop = true;
-// Mobilde uzun dosyalar için 'none' veya 'metadata' yerine 'auto' denemek gerekebilir
-music.preload = "auto"; 
+  /************************************************************
+   * SES
+   ************************************************************/
+  const music = new Audio("madde.mp3");
+  music.loop = true; music.preload = "auto";
+  const sOK = new Audio("alkıs.mp3");
+  const sNO = new Audio("hata.mp3");
+  [sOK,sNO].forEach(a=>a.preload="auto");
 
-// 2. Diğer sesler zaten çalışıyor dediniz
-const sOK = new Audio("alkis.mp3");
-const sNO = new Audio("hata.mp3");
+  let musicOn = true, fxOn = true;
+  let musicVol = 0.35, fxVol = 0.60;
 
-let musicOn = true;
-let musicVol = 0.35;
+  function applyAudio(){
+    music.volume = musicOn ? musicVol : 0;
+    sOK.volume = fxOn ? fxVol : 0;
+    sNO.volume = fxOn ? fxVol : 0;
+  }
+  applyAudio();
 
-function applyAudioSettings() {
-    // Müziğin ses seviyesini ayarla
-    if (music) music.volume = musicOn ? musicVol : 0;
-    if (sOK) sOK.volume = 0.60; // Sabit veya slider'dan
-    if (sNO) sNO.volume = 0.60;
-}
+  $("musicVol").addEventListener("input",(e)=>{ musicVol=+e.target.value; applyAudio(); });
+  $("fxVol").addEventListener("input",(e)=>{ fxVol=+e.target.value; applyAudio(); });
 
-// 3. MOBİLDE MÜZİĞİ UYANDIRMA (Kritik Kısım)
-async function startMusicMobile() {
-    try {
-        applyAudioSettings();
-        // Müziği oynatmaya çalış
-        const playPromise = music.play();
-        
-        if (playPromise !== undefined) {
-            playPromise.then(_ => {
-                // Oynatma başladı, eğer müzik kapalıysa sustur ama bağlantıyı koparma
-                if (!musicOn) music.pause();
-                console.log("Arka plan müziği başarıyla yüklendi.");
-            }).catch(error => {
-                // Otomatik oynatma engellendi, etkileşim gerekiyor
-                console.log("Müzik için etkileşim bekleniyor...");
-            });
-        }
-    } catch (err) {
-        console.error("Müzik yükleme hatası:", err);
-    }
-}
+  $("musicToggle").addEventListener("click",()=>{
+    musicOn=!musicOn;
+    $("musicToggle").textContent = musicOn ? "Açık" : "Kapalı";
+    applyAudio();
+  });
+  $("fxToggle").addEventListener("click",()=>{
+    fxOn=!fxOn;
+    $("fxToggle").textContent = fxOn ? "Açık" : "Kapalı";
+    applyAudio();
+  });
 
-// 4. BAŞLAT BUTONU (Müziği burada tetikliyoruz)
-document.getElementById("btnStart").onclick = async function() {
-    // Müziği zorla başlat
-    await startMusicMobile();
-    
-    // Diğer sesleri de "uyandır" (zaten çalışıyorlar demiştiniz ama garanti olsun)
-    sOK.play().then(() => sOK.pause());
-    
-    if (typeof startGame === "function") startGame();
-};
-
-// 5. SLIDER DÜZELTMESİ
-document.getElementById("musicVol").oninput = function() {
-    musicVol = parseFloat(this.value);
-    if (music) music.volume = musicOn ? musicVol : 0;
-};
-
+  let musicStarted=false;
+  async function ensureMusic(){
+    if(musicStarted) return;
+    musicStarted=true;
+    try{ await music.play(); }catch{}
+  }
+  ["click","touchstart","keydown"].forEach(ev=>{
+    window.addEventListener(ev, ensureMusic, {once:true, passive:true});
+  });
 
   /************************************************************
    * Confetti (mor + mavi)
